@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="/assets/" data-template="vertical-menu-template-free">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>@yield('title', 'Nexus ERP & CRM — Enterprise Cloud Platform')</title>
+
+    <meta name="description" content="Nexus ERP & CRM — Multi-Company Enterprise Cloud CRM & Accounting System" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/logo.svg') }}" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+
+    <!-- Icons: Boxicons & FontAwesome -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
+
+    <!-- Premier Theme Palette Strictly Matched with Official Vector Logo -->
+    <style>
+        :root {
+            --bs-primary: #2563eb;
+            --bs-primary-rgb: 37, 99, 235;
+            --brand-royal: #4338ca;
+            --brand-sapphire: #2563eb;
+            --brand-electric: #3b82f6;
+            --brand-sky: #0284c7;
+            --brand-cyan: #06b6d4;
+            --brand-emerald: #10b981;
+            --brand-dark: #0f172a;
+            --brand-midnight: #1e1b4b;
+        }
+
+        /* Avatar Precision Fix: Perfect circle without stretching or distortion */
+        .avatar {
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px !important;
+            min-height: 38px !important;
+            max-width: 38px !important;
+            max-height: 38px !important;
+            position: relative;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0 !important;
+            overflow: visible !important;
+        }
+        .avatar img, .avatar-img-fixed {
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px !important;
+            min-height: 38px !important;
+            max-width: 38px !important;
+            max-height: 38px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            object-position: center 20% !important;
+            display: block !important;
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15) !important;
+        }
+        .avatar .avatar-initial {
+            width: 38px !important;
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.95rem !important;
+        }
+        .avatar-online::after {
+            bottom: 0px !important;
+            right: 0px !important;
+            width: 10px !important;
+            height: 10px !important;
+            background-color: #10b981 !important;
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4) !important;
+        }
+
+        /* Buttons Matched to Logo Sapphire/Royal Gradient */
+        .btn-primary {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px 0 rgba(37, 99, 235, 0.35) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background: linear-gradient(135deg, #3730a3 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 6px 18px 0 rgba(37, 99, 235, 0.45) !important;
+            transform: translateY(-1px);
+        }
+        .btn-outline-primary {
+            color: #2563eb !important;
+            border-color: #2563eb !important;
+            font-weight: 600;
+        }
+        .btn-outline-primary:hover, .btn-outline-primary:active {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%) !important;
+            border-color: #2563eb !important;
+            color: #fff !important;
+        }
+
+        /* Success & Emerald Action Buttons (Logo Node Accent) */
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px 0 rgba(16, 185, 129, 0.3) !important;
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+            box-shadow: 0 6px 16px 0 rgba(16, 185, 129, 0.4) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Primary Text, Accents & Badges */
+        .text-primary { color: #2563eb !important; }
+        .bg-primary { background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%) !important; }
+        .bg-label-primary {
+            background-color: rgba(37, 99, 235, 0.1) !important;
+            color: #2563eb !important;
+            font-weight: 600;
+        }
+        .bg-label-success {
+            background-color: rgba(16, 185, 129, 0.12) !important;
+            color: #059669 !important;
+            font-weight: 600;
+        }
+        .bg-label-info {
+            background-color: rgba(2, 132, 199, 0.1) !important;
+            color: #0284c7 !important;
+            font-weight: 600;
+        }
+        .border-primary { border-color: #2563eb !important; }
+
+        /* Sidebar Navigation Active Colors */
+        .layout-menu .menu-inner > .menu-item.active > .menu-link {
+            color: #2563eb !important;
+            background: linear-gradient(135deg, rgba(67, 56, 202, 0.08) 0%, rgba(37, 99, 235, 0.12) 100%) !important;
+            font-weight: 600 !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+            border-radius: 8px;
+        }
+        .layout-menu .menu-inner > .menu-item.active:before {
+            background: linear-gradient(180deg, #4338ca 0%, #2563eb 50%, #06b6d4 100%) !important;
+            width: 4px !important;
+            border-radius: 0 4px 4px 0 !important;
+        }
+        .layout-menu .menu-inner > .menu-item .menu-icon {
+            color: #64748b;
+        }
+        .layout-menu .menu-inner > .menu-item.active .menu-icon {
+            color: #2563eb !important;
+        }
+
+        /* Navbar Workspace & Plan Badges */
+        .navbar-workspace-badge {
+            background: linear-gradient(135deg, rgba(67, 56, 202, 0.08) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.22);
+            color: #2563eb;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        .navbar-plan-badge {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(16, 185, 129, 0.12) 100%);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: #0284c7;
+            font-weight: 700;
+            border-radius: 8px;
+        }
+
+        /* Input Controls */
+        .form-check-input:checked {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15) !important;
+        }
+
+        /* Cards, Tables & Badges */
+        .badge-status { font-size: 0.82rem; padding: 0.4em 0.8em; text-transform: uppercase; font-weight: 600; }
+        .table > :not(caption) > * > * { padding: 0.85rem 1.25rem; vertical-align: middle; }
+        .card { box-shadow: 0 2px 10px 0 rgba(15, 23, 42, 0.06); border: none; }
+        .btn-icon { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 7px; }
+        .brand-gradient-text {
+            background: linear-gradient(135deg, #4338ca 0%, #2563eb 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Floating Modern Toast Notifications */
+        .toast-floating-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .custom-toaster {
+            pointer-events: auto;
+            min-width: 330px;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            gap: 14px;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .custom-toaster.toaster-success {
+            border-left: 5px solid #10b981;
+        }
+        .custom-toaster.toaster-error {
+            border-left: 5px solid #ef4444;
+        }
+        .custom-toaster.toaster-info {
+            border-left: 5px solid #2563eb;
+        }
+        @keyframes toastSlideIn {
+            from { transform: translateX(110%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+
+    <!-- Helpers -->
+    <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
+    <script src="{{ asset('assets/js/config.js') }}"></script>
+</head>
+<body>
+
+<!-- Floating Green Toast Notification Container -->
+<div class="toast-floating-container" id="toastFloatingContainer">
+    @if(session('success'))
+        <div class="custom-toaster toaster-success">
+            <div class="avatar avatar-sm bg-label-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                <i class="bx bx-check fs-4 text-success"></i>
+            </div>
+            <div class="flex-grow-1">
+                <strong class="d-block text-dark fw-bold mb-0">Success!</strong>
+                <span class="text-muted small">{{ session('success') }}</span>
+            </div>
+            <button type="button" class="btn-close btn-sm" onclick="this.closest('.custom-toaster').remove()"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="custom-toaster toaster-error">
+            <div class="avatar avatar-sm bg-label-danger rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                <i class="bx bx-x fs-4 text-danger"></i>
+            </div>
+            <div class="flex-grow-1">
+                <strong class="d-block text-dark fw-bold mb-0">Error!</strong>
+                <span class="text-muted small">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="btn-close btn-sm" onclick="this.closest('.custom-toaster').remove()"></button>
+        </div>
+    @endif
+
+    @if(session('info'))
+        <div class="custom-toaster toaster-info">
+            <div class="avatar avatar-sm bg-label-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                <i class="bx bx-info-circle fs-4 text-primary"></i>
+            </div>
+            <div class="flex-grow-1">
+                <strong class="d-block text-dark fw-bold mb-0">Notice</strong>
+                <span class="text-muted small">{{ session('info') }}</span>
+            </div>
+            <button type="button" class="btn-close btn-sm" onclick="this.closest('.custom-toaster').remove()"></button>
+        </div>
+    @endif
+</div>
+
+@auth
+    @if(auth()->user()->is_otp_verified)
+        @php
+            $user = auth()->user();
+            $isSuperAdmin = $user->isSuperAdmin();
+            $isCompanyOwner = $user->isCompanyOwner();
+            $currentCompany = $user->currentCompany;
+
+            $can = function($permissionKey) use ($user) {
+                return $user->hasPermission($permissionKey);
+            };
+        @endphp
+
+        <!-- Layout wrapper -->
+        <div class="layout-wrapper layout-content-navbar">
+            <div class="layout-container">
+
+                <!-- Left Sidebar Menu -->
+                <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                    <div class="app-brand demo py-3">
+                        <a href="{{ route('dashboard') }}" class="app-brand-link gap-2 align-items-center text-decoration-none">
+                            <span class="app-brand-logo demo">
+                                <img src="{{ asset('assets/img/logo.svg') }}" width="36" height="36" alt="Nexus Logo" />
+                            </span>
+                            <span class="app-brand-text demo menu-text fw-bold fs-4 ms-1" style="color: #0f172a; letter-spacing: -0.5px;">
+                                NEXUS<span style="color: #2563eb;">ERP</span>
+                            </span>
+                        </a>
+
+                        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                        </a>
+                    </div>
+
+                    <div class="menu-inner-shadow"></div>
+
+                    <ul class="menu-inner py-1">
+                        <!-- Dashboard -->
+                        <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('dashboard') }}" class="menu-link">
+                                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                                <div>Dashboard</div>
+                            </a>
+                        </li>
+
+                        @if($isSuperAdmin)
+                            <!-- Super Admin Dedicated Menu -->
+                            <li class="menu-header small text-uppercase">
+                                <span class="menu-header-text">Super Admin Control</span>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('admin.companies') ? 'active' : '' }}">
+                                <a href="{{ route('admin.companies') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-buildings"></i>
+                                    <div>All Companies</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.users') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-user-check"></i>
+                                    <div>System Users</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('activity.*') ? 'active' : '' }}">
+                                <a href="{{ route('activity.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-history"></i>
+                                    <div>Activity & Audit Logs</div>
+                                </a>
+                            </li>
+
+                            <li class="menu-header small text-uppercase">
+                                <span class="menu-header-text">Platform Modules (All Data)</span>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('leads.*') ? 'active' : '' }}">
+                                <a href="{{ route('leads.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-target-lock"></i>
+                                    <div>Leads Pipeline</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                                <a href="{{ route('customers.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-user-pin"></i>
+                                    <div>Customers Directory</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                                <a href="{{ route('products.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-package"></i>
+                                    <div>Products & Inventory</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('quotations.*') ? 'active' : '' }}">
+                                <a href="{{ route('quotations.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-file-blank"></i>
+                                    <div>Quotations</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
+                                <a href="{{ route('invoices.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-receipt"></i>
+                                    <div>Sales Invoices</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('purchases.*') ? 'active' : '' }}">
+                                <a href="{{ route('purchases.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-cart"></i>
+                                    <div>Supplier Purchases</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('supplier_ledger.*') ? 'active' : '' }}">
+                                <a href="{{ route('supplier_ledger.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-file-find"></i>
+                                    <div>Supplier Statement</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
+                                <a href="{{ route('accounts.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-wallet"></i>
+                                    <div>Bank & Cash Accounts</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('vendors.*') ? 'active' : '' }}">
+                                <a href="{{ route('vendors.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-store-alt"></i>
+                                    <div>Vendors</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
+                                <a href="{{ route('expenses.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                                    <div>Expenses Log</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('ledger.*') ? 'active' : '' }}">
+                                <a href="{{ route('ledger.index') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-book-open"></i>
+                                    <div>Customer Ledger</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                                <a href="{{ route('reports.profit_loss') }}" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-line-chart"></i>
+                                    <div>Profit & Loss Report</div>
+                                </a>
+                            </li>
+                        @else
+                            <!-- Company Tenant Menu (Scoped & Permission Checked) -->
+                            @if($user->companies->count() > 0)
+                                @if($can('leads_view') || $can('customers_view'))
+                                    <li class="menu-header small text-uppercase">
+                                        <span class="menu-header-text">CRM (Sales & Clients)</span>
+                                    </li>
+                                    @if($can('leads_view'))
+                                        <li class="menu-item {{ request()->routeIs('leads.*') ? 'active' : '' }}">
+                                            <a href="{{ route('leads.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-target-lock"></i>
+                                                <div>Leads Pipeline</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($can('customers_view'))
+                                        <li class="menu-item {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                                            <a href="{{ route('customers.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-user-pin"></i>
+                                                <div>Customers Directory</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endif
+
+                                <!-- Sales & Billing Section -->
+                                @if($can('products_view') || $can('quotes_view') || $can('invoices_view'))
+                                    <li class="menu-header small text-uppercase">
+                                        <span class="menu-header-text">Sales & Invoicing</span>
+                                    </li>
+                                    @if($can('products_view'))
+                                        <li class="menu-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                                            <a href="{{ route('products.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-package"></i>
+                                                <div>Products & Inventory</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($can('quotes_view'))
+                                        <li class="menu-item {{ request()->routeIs('quotations.*') ? 'active' : '' }}">
+                                            <a href="{{ route('quotations.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-file-blank"></i>
+                                                <div>Quotations</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($can('invoices_view'))
+                                        <li class="menu-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
+                                            <a href="{{ route('invoices.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                                                <div>Sales Invoices</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endif
+
+                                <!-- Procurement & Supplier Section -->
+                                @if($can('vendors_view') || $can('expenses_view') || $isCompanyOwner)
+                                    <li class="menu-header small text-uppercase">
+                                        <span class="menu-header-text">Procurement & Stock</span>
+                                    </li>
+                                    <li class="menu-item {{ request()->routeIs('purchases.*') ? 'active' : '' }}">
+                                        <a href="{{ route('purchases.index') }}" class="menu-link">
+                                            <i class="menu-icon tf-icons bx bx-cart"></i>
+                                            <div>Supplier Purchases</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{ request()->routeIs('supplier_ledger.*') ? 'active' : '' }}">
+                                        <a href="{{ route('supplier_ledger.index') }}" class="menu-link">
+                                            <i class="menu-icon tf-icons bx bx-file-find"></i>
+                                            <div>Supplier Statement</div>
+                                        </a>
+                                    </li>
+                                    @if($can('vendors_view'))
+                                        <li class="menu-item {{ request()->routeIs('vendors.*') ? 'active' : '' }}">
+                                            <a href="{{ route('vendors.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-store-alt"></i>
+                                                <div>Vendors List</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endif
+
+                                <!-- Accounting Section -->
+                                @if($can('accounts_view') || $can('expenses_view') || $can('reports_view'))
+                                    <li class="menu-header small text-uppercase">
+                                        <span class="menu-header-text">Accounting & Finance</span>
+                                    </li>
+                                    @if($can('accounts_view'))
+                                        <li class="menu-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
+                                            <a href="{{ route('accounts.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-wallet"></i>
+                                                <div>Bank & Cash Accounts</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($can('expenses_view'))
+                                        <li class="menu-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
+                                            <a href="{{ route('expenses.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                                                <div>Operating Expenses</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($can('reports_view'))
+                                        <li class="menu-item {{ request()->routeIs('ledger.*') ? 'active' : '' }}">
+                                            <a href="{{ route('ledger.index') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-book-open"></i>
+                                                <div>Customer Ledger</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                                            <a href="{{ route('reports.profit_loss') }}" class="menu-link">
+                                                <i class="menu-icon tf-icons bx bx-line-chart"></i>
+                                                <div>Profit & Loss Report</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endif
+
+                                <!-- Management Section (Owner Only) -->
+                                @if($isCompanyOwner)
+                                    <li class="menu-header small text-uppercase">
+                                        <span class="menu-header-text">Company Management</span>
+                                    </li>
+                                    <li class="menu-item {{ request()->routeIs('companies.*') ? 'active' : '' }}">
+                                        <a href="{{ route('companies.index') }}" class="menu-link">
+                                            <i class="menu-icon tf-icons bx bx-building"></i>
+                                            <div>My Companies & Plans</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{ request()->routeIs('team.*') ? 'active' : '' }}">
+                                        <a href="{{ route('team.index') }}" class="menu-link">
+                                            <i class="menu-icon tf-icons bx bx-group"></i>
+                                            <div>Team & Sub-Users</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{ request()->routeIs('activity.*') ? 'active' : '' }}">
+                                        <a href="{{ route('activity.index') }}" class="menu-link">
+                                            <i class="menu-icon tf-icons bx bx-shield-quarter"></i>
+                                            <div>Activity & Audit Logs</div>
+                                        </a>
+                                    </li>
+                                @endif
+                            @else
+                                <li class="menu-header small text-uppercase">
+                                    <span class="menu-header-text">Workspace Setup</span>
+                                </li>
+                                <li class="menu-item active">
+                                    <a href="{{ route('companies.index') }}" class="menu-link">
+                                        <i class="menu-icon tf-icons bx bx-building-plus text-primary"></i>
+                                        <div>Create First Company</div>
+                                    </a>
+                                </li>
+                            @endif
+                        @endif
+                    </ul>
+                </aside>
+                <!-- / Menu -->
+
+                <!-- Layout Page Container -->
+                <div class="layout-page">
+
+                    <!-- Top Navbar -->
+                    <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+                        <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                            <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                                <i class="bx bx-menu bx-sm"></i>
+                            </a>
+                        </div>
+
+                        <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                            <!-- Workspace Indicator / Switcher -->
+                            <div class="navbar-nav align-items-center">
+                                @if(!$isSuperAdmin && $user->companies->count() > 0)
+                                    <div class="nav-item d-flex align-items-center">
+                                        <form action="{{ route('company.switch') }}" method="POST" class="d-flex align-items-center m-0">
+                                            @csrf
+                                            <span class="badge navbar-workspace-badge me-2 px-3 py-1"><i class="bx bx-buildings me-1"></i> WORKSPACE:</span>
+                                            <select name="company_id" onchange="this.form.submit()" class="form-select form-select-sm border-0 shadow-none fw-semibold" style="cursor: pointer; width: auto; background-color: #f5f5f9;">
+                                                @foreach($user->companies as $comp)
+                                                    <option value="{{ $comp->id }}" {{ $user->current_company_id == $comp->id ? 'selected' : '' }}>
+                                                        {{ $comp->name }} ({{ $comp->currency }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </form>
+
+                                        <!-- SaaS Plan Badge -->
+                                        @php
+                                            $activeComp = $currentCompany ?? $user->companies->first();
+                                            $plan = $activeComp->plan ?? 'trial';
+                                        @endphp
+                                        @if($plan === 'premium')
+                                            <span class="badge navbar-plan-badge ms-2 px-3 py-1"><i class="bx bx-diamond me-1"></i> PREMIUM SUITE</span>
+                                        @elseif($plan === 'advance')
+                                            <span class="badge navbar-plan-badge ms-2 px-3 py-1"><i class="bx bx-crown me-1"></i> ADVANCE PRO</span>
+                                        @elseif($plan === 'basic')
+                                            <span class="badge navbar-plan-badge ms-2 px-3 py-1"><i class="bx bx-shield-alt me-1"></i> BASIC PLAN (5 USERS)</span>
+                                        @else
+                                            <span class="badge bg-label-warning ms-2 px-3 py-1 fw-bold"><i class="bx bx-time me-1"></i> 14-DAY TRIAL</span>
+                                        @endif
+                                    </div>
+                                @elseif(!$isSuperAdmin && $user->companies->count() == 0)
+                                    <a href="{{ route('companies.index') }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bx bx-plus me-1"></i> Set Up Your Company Workspace
+                                    </a>
+                                @elseif($isSuperAdmin)
+                                    <span class="badge bg-label-danger py-2 px-3 fw-bold"><i class="bx bx-crown me-1"></i> Super Admin Global Monitor</span>
+                                @endif
+                            </div>
+
+                            <ul class="navbar-nav flex-row align-items-center ms-auto gap-3">
+                                <!-- User Dropdown -->
+                                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                    <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                        <div class="avatar avatar-online me-2">
+                                            @if($user->avatar)
+                                                <img src="{{ asset($user->avatar) }}" alt="Avatar" class="avatar-img-fixed" />
+                                            @else
+                                                <span class="avatar-initial rounded-circle bg-primary text-white fw-bold">
+                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="d-none d-sm-block text-start">
+                                            <span class="fw-semibold d-block lh-1">{{ $user->name }}</span>
+                                            <small class="text-muted">{{ $user->role->name ?? 'User' }}</small>
+                                        </div>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0 me-3">
+                                                        <div class="avatar avatar-online">
+                                                            @if($user->avatar)
+                                                                <img src="{{ asset($user->avatar) }}" alt="Avatar" class="avatar-img-fixed" />
+                                                            @else
+                                                                <span class="avatar-initial rounded-circle bg-primary text-white fw-bold">
+                                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <span class="fw-semibold d-block">{{ $user->name }}</span>
+                                                        <small class="text-muted">{{ $user->email }}</small>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li><div class="dropdown-divider"></div></li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                                <i class="bx bx-user me-2"></i>
+                                                <span class="align-middle">My Account Profile</span>
+                                            </a>
+                                        </li>
+                                        @if($isCompanyOwner)
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('companies.index') }}">
+                                                    <i class="bx bx-buildings me-2"></i>
+                                                    <span class="align-middle">My Companies & Plans</span>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        <li><div class="dropdown-divider"></div></li>
+                                        <li>
+                                            <form action="{{ route('logout') }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="bx bx-power-off me-2"></i>
+                                                    <span class="align-middle">Log Out</span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                    <!-- / Top Navbar -->
+
+                    <!-- Content wrapper -->
+                    <div class="content-wrapper">
+                        <!-- Main Content Container -->
+                        <div class="container-xxl flex-grow-1 container-p-y">
+                            @yield('content')
+                        </div>
+                        <!-- / Container -->
+
+                        <!-- Footer -->
+                        <footer class="content-footer footer bg-footer-theme">
+                            <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                                <div class="mb-2 mb-md-0 text-muted small">
+                                    © {{ date('Y') }} <strong>Nexus ERP & CRM</strong> — Enterprise Cloud Multi-Company Accounting
+                                </div>
+                                <div class="text-muted small">
+                                    Active Workspace: <strong class="text-primary">{{ $currentCompany->name ?? 'Global' }}</strong> ({{ $currentCompany->currency ?? 'USD' }})
+                                </div>
+                            </div>
+                        </footer>
+
+                        <div class="content-backdrop fade"></div>
+                    </div>
+                    <!-- / Content wrapper -->
+                </div>
+                <!-- / Layout page -->
+            </div>
+
+            <!-- Overlay for mobile hamburger -->
+            <div class="layout-overlay layout-menu-toggle"></div>
+        </div>
+        <!-- / Layout wrapper -->
+
+        <!-- Multi-Company Popup Modal for Multi-Company Users ONLY on Fresh Login -->
+        @if(!$isSuperAdmin && $user->companies->count() > 1 && session('show_company_select_modal') && !session()->has('company_modal_dismissed'))
+            <div class="modal fade show d-block" id="companySelectModal" style="background: rgba(0,0,0,0.6);" tabindex="-1" aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content shadow-lg border-0">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title text-white fw-bold"><i class="bx bx-buildings me-2"></i> Select Active Workspace</h5>
+                            <button type="button" class="btn-close btn-close-white" onclick="dismissCompanyModal()"></button>
+                        </div>
+                        <div class="modal-body py-4">
+                            <p class="text-muted mb-4 text-center">You belong to multiple companies. Please choose which workspace you want to load into:</p>
+                            <div class="d-grid gap-3">
+                                @foreach($user->companies as $comp)
+                                    <form action="{{ route('company.switch') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="company_id" value="{{ $comp->id }}">
+                                        <button type="submit" class="btn btn-outline-primary btn-lg w-100 text-start d-flex justify-content-between align-items-center p-3">
+                                            <div>
+                                                <strong class="d-block text-dark fs-5">{{ $comp->name }}</strong>
+                                                <small class="text-muted"><i class="bx bx-money me-1"></i> Currency: {{ $comp->currency }}</small>
+                                            </div>
+                                            <i class="bx bx-chevron-right fs-3"></i>
+                                        </button>
+                                    </form>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light py-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="dismissCompanyModal()">Continue with Current Active Company</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function dismissCompanyModal() {
+                    fetch('{{ route("company.dismiss_modal") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        const modal = document.getElementById('companySelectModal');
+                        if (modal) modal.remove();
+                    });
+                }
+            </script>
+        @endif
+
+    @else
+        <!-- OTP Screen Layout: Pure centered box, sidebar and navbar completely hidden -->
+        <div class="d-flex align-items-center justify-content-center min-vh-100 py-5 px-3" style="background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%), #f8fafc;">
+            @yield('content')
+        </div>
+    @endif
+@else
+    <!-- Guest Layout (Login / Register) - Full Width Centered Container -->
+    <div class="d-flex align-items-center justify-content-center min-vh-100 py-5 px-3" style="background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%), #f8fafc;">
+        @yield('content')
+    </div>
+@endauth
+
+<!-- Core JS -->
+<script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
+<script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+<script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
+
+<!-- Vendors JS -->
+<script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+
+<!-- Main JS -->
+<script src="{{ asset('assets/js/main.js') }}"></script>
+
+<!-- Toast Auto-Dismiss & Dynamic Helper Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        document.querySelectorAll('.custom-toaster').forEach(function(el) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(100%)';
+            setTimeout(function() { el.remove(); }, 350);
+        });
+    }, 4500);
+});
+
+function showToast(type, message) {
+    const container = document.getElementById('toastFloatingContainer');
+    if (!container) return;
+    const isSuccess = type === 'success';
+    const borderClass = isSuccess ? 'toaster-success' : 'toaster-error';
+    const bgBadge = isSuccess ? 'bg-label-success' : 'bg-label-danger';
+    const iconClass = isSuccess ? 'bx-check text-success' : 'bx-x text-danger';
+    const title = isSuccess ? 'Success!' : 'Notice';
+
+    const toast = document.createElement('div');
+    toast.className = `custom-toaster ${borderClass}`;
+    toast.innerHTML = `
+        <div class="avatar avatar-sm ${bgBadge} rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+            <i class="bx ${iconClass} fs-4"></i>
+        </div>
+        <div class="flex-grow-1">
+            <strong class="d-block text-dark fw-bold mb-0">${title}</strong>
+            <span class="text-muted small">${message}</span>
+        </div>
+        <button type="button" class="btn-close btn-sm" onclick="this.closest('.custom-toaster').remove()"></button>
+    `;
+    container.appendChild(toast);
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(function() { toast.remove(); }, 350);
+    }, 4500);
+}
+</script>
+
+@stack('scripts')
+</body>
+</html>
