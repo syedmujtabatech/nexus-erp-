@@ -666,7 +666,7 @@
                                         </div>
                                         <div class="d-none d-sm-block text-start">
                                             <span class="fw-semibold d-block lh-1">{{ $user->name }}</span>
-                                            <small class="text-muted">{{ $user->role->name ?? 'User' }}</small>
+                                            <small class="text-primary fw-semibold" style="font-size: 0.72rem;"><i class="bx bxs-badge-check me-1"></i>{{ $user->role->name ?? 'Super Admin' }}</small>
                                         </div>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end shadow">
@@ -686,7 +686,7 @@
                                                     </div>
                                                     <div class="flex-grow-1">
                                                         <span class="fw-semibold d-block">{{ $user->name }}</span>
-                                                        <small class="text-muted">{{ $user->email }}</small>
+                                                        <small class="text-muted">{{ $user->email }} &bull; <strong class="text-primary">{{ $user->role->name ?? 'Super Admin' }}</strong></small>
                                                     </div>
                                                 </div>
                                             </a>
@@ -755,35 +755,57 @@
         </div>
         <!-- / Layout wrapper -->
 
-        <!-- Multi-Company Popup Modal for Multi-Company Users ONLY on Fresh Login -->
-        @if(!$isSuperAdmin && $user->companies->count() > 1 && session('show_company_select_modal') && !session()->has('company_modal_dismissed'))
-            <div class="modal fade show d-block" id="companySelectModal" style="background: rgba(0,0,0,0.6);" tabindex="-1" aria-modal="true" role="dialog">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content shadow-lg border-0">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title text-white fw-bold"><i class="bx bx-buildings me-2"></i> Select Active Workspace</h5>
+        <!-- Multi-Company Popup Modal -->
+        @if($user->companies->count() > 1 && session('show_company_select_modal') && !session()->has('company_modal_dismissed'))
+            <div class="modal fade show d-block" id="companySelectModal" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);" tabindex="-1" aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+                    <div class="modal-content shadow-2xl border-0 rounded-4 overflow-hidden">
+                        <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e1b4b 0%, #2563eb 100%);">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bx bx-buildings fs-4 text-warning"></i>
+                                <div>
+                                    <h6 class="modal-title text-white fw-bold mb-0">Select Active Workspace</h6>
+                                    <small class="text-white-50" style="font-size: 0.75rem;">Switch between enterprise entities</small>
+                                </div>
+                            </div>
                             <button type="button" class="btn-close btn-close-white" onclick="dismissCompanyModal()"></button>
                         </div>
-                        <div class="modal-body py-4">
-                            <p class="text-muted mb-4 text-center">You belong to multiple companies. Please choose which workspace you want to load into:</p>
-                            <div class="d-grid gap-3">
+                        <div class="modal-body p-4 bg-light">
+                            <p class="text-muted small mb-3 text-center">Select the business profile to load dashboard &amp; transactions:</p>
+                            <div class="d-grid gap-2">
                                 @foreach($user->companies as $comp)
+                                    @php $isActive = ($user->current_company_id == $comp->id); @endphp
                                     <form action="{{ route('company.switch') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="company_id" value="{{ $comp->id }}">
-                                        <button type="submit" class="btn btn-outline-primary btn-lg w-100 text-start d-flex justify-content-between align-items-center p-3">
-                                            <div>
-                                                <strong class="d-block text-dark fs-5">{{ $comp->name }}</strong>
-                                                <small class="text-muted"><i class="bx bx-money me-1"></i> Currency: {{ $comp->currency }}</small>
+                                        <button type="submit" class="btn w-100 text-start p-3 rounded-3 d-flex align-items-center justify-content-between transition-all" style="background: #ffffff; border: 1.5px solid {{ $isActive ? '#2563eb' : '#e2e8f0' }}; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background: {{ $isActive ? 'rgba(37,99,235,0.1)' : '#f1f5f9' }}; width: 44px; height: 44px;">
+                                                    <i class="bx bxs-business fs-4 {{ $isActive ? 'text-primary' : 'text-muted' }}"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark fs-6 lh-sm mb-1">{{ $comp->name }}</div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-label-primary px-2 py-0" style="font-size: 0.68rem;">{{ $comp->currency }}</span>
+                                                        <span class="text-muted" style="font-size: 0.72rem;">{{ ucfirst($comp->plan ?? 'Enterprise') }} Plan</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <i class="bx bx-chevron-right fs-3"></i>
+                                            <div>
+                                                @if($isActive)
+                                                    <span class="badge bg-primary rounded-pill px-2 py-1" style="font-size: 0.65rem;">Active</span>
+                                                @else
+                                                    <i class="bx bx-chevron-right fs-4 text-muted"></i>
+                                                @endif
+                                            </div>
                                         </button>
                                     </form>
                                 @endforeach
                             </div>
                         </div>
-                        <div class="modal-footer bg-light py-2">
-                            <button type="button" class="btn btn-outline-secondary w-100" onclick="dismissCompanyModal()">Continue with Current Active Company</button>
+                        <div class="modal-footer bg-white border-top py-2 px-4 d-flex justify-content-between">
+                            <small class="text-muted" style="font-size: 0.72rem;"><i class="bx bx-lock-alt me-1"></i> Multi-Tenant Isolated Scope</small>
+                            <button type="button" class="btn btn-sm btn-outline-secondary px-3" onclick="dismissCompanyModal()">Dismiss</button>
                         </div>
                     </div>
                 </div>
