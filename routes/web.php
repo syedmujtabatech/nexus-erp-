@@ -23,7 +23,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Google OAuth Routes
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('oauth.google');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('oauth.google.callback');
+Route::match(['get', 'post'], '/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('oauth.google.callback');
 
 // OTP Verification Screen (Accessible to unverified auth users)
 Route::middleware('auth')->group(function () {

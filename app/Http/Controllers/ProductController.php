@@ -11,7 +11,8 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->get();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $products = Product::where('company_id', $companyId)->latest()->get();
         return view('products.index', compact('products'));
     }
 

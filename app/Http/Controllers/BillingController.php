@@ -25,16 +25,18 @@ class BillingController extends Controller
     // ==========================================
     public function indexQuotations()
     {
-        $quotations = Quotation::with('customer')->latest()->get();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $quotations = Quotation::where('company_id', $companyId)->with('customer')->latest()->get();
         return view('billing.quotations.index', compact('quotations'));
     }
 
     public function createQuotation(Request $request)
     {
-        $customers = Customer::all();
-        $products = Product::all();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $customers = Customer::where('company_id', $companyId)->get();
+        $products = Product::where('company_id', $companyId)->get();
         $selectedCustomerId = $request->get('customer_id');
-        $nextSeq = SequenceService::getNextNumber(Auth::user()->current_company_id, 'quotation', 'QT-');
+        $nextSeq = SequenceService::getNextNumber($companyId, 'quotation', 'QT-');
         return view('billing.quotations.create', compact('customers', 'products', 'selectedCustomerId', 'nextSeq'));
     }
 
@@ -232,17 +234,19 @@ class BillingController extends Controller
     // ==========================================
     public function indexInvoices()
     {
-        $invoices = Invoice::with(['customer', 'salesPerson'])->latest()->get();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $invoices = Invoice::where('company_id', $companyId)->with(['customer', 'salesPerson'])->latest()->get();
         return view('billing.invoices.index', compact('invoices'));
     }
 
     public function createInvoice(Request $request)
     {
-        $customers = Customer::with('invoices')->get();
-        $products = Product::all();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $customers = Customer::where('company_id', $companyId)->with('invoices')->get();
+        $products = Product::where('company_id', $companyId)->get();
         $company = Auth::user()->currentCompany;
         $teamUsers = $company ? $company->users()->get()->push($company->owner)->filter()->unique('id') : collect([Auth::user()]);
-        $nextSeq = SequenceService::getNextNumber(Auth::user()->current_company_id, 'invoice', 'INV-');
+        $nextSeq = SequenceService::getNextNumber($companyId, 'invoice', 'INV-');
         $selectedCustomerId = $request->get('customer_id');
 
         return view('billing.invoices.create', compact('customers', 'products', 'teamUsers', 'nextSeq', 'selectedCustomerId'));
@@ -251,7 +255,8 @@ class BillingController extends Controller
     public function showInvoice($id)
     {
         $invoice = Invoice::with(['customer', 'items.product', 'transactions.account', 'salesPerson'])->findOrFail($id);
-        $accounts = Account::all();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $accounts = Account::where('company_id', $companyId)->get();
         $company = Auth::user()->currentCompany;
         $whatsAppUrl = WhatsAppService::getInvoiceWhatsAppUrl($invoice);
 

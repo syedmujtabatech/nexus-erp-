@@ -21,46 +21,51 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Super Admin View (Role 1)
-        if ($user->isSuperAdmin()) {
-            $totalCompanies = Company::count();
-            $totalUsers = User::count();
-            $totalSystemInvoices = Invoice::count();
-            $totalRevenue = Transaction::where('type', 'income')->sum('amount');
-            $companies = Company::with('owner')->latest()->take(10)->get();
-
-            return view('dashboard.admin', compact('totalCompanies', 'totalUsers', 'totalSystemInvoices', 'totalRevenue', 'companies'));
-        }
-
-        // 2. Company Owner / Subuser View (Role 2 & 3)
-        $company = $user->currentCompany;
+        // 1. Resolve Active Company Workspace
+        $companyId = $user->current_company_id;
+        $company = $companyId ? Company::find($companyId) : null;
         $userCompanies = $user->companies;
 
         if (!$company && $userCompanies->count() > 0) {
             $company = $userCompanies->first();
-            $user->update(['current_company_id' => $company->id]);
+            $companyId = $company->id;
+            $user->update(['current_company_id' => $companyId]);
         }
 
-        $currency = $company ? $company->currency : 'USD';
+        if (!$company) {
+            $company = Company::first();
+            if ($company) {
+                $companyId = $company->id;
+                $user->update(['current_company_id' => $companyId]);
+            }
+        }
 
-        $totalLeads = Lead::count();
-        $totalCustomers = Customer::count();
-        $totalInvoices = Invoice::count();
-        $totalProducts = Product::count();
-        $totalPurchases = Purchase::count();
+        $currency = $company ? ($company->currency ?: 'PKR') : 'PKR';
 
-        // Financial KPIs
-        $totalIncome = Transaction::where('type', 'income')->sum('amount');
-        $totalExpenses = Expense::sum('amount');
+        // 2. Tenancy Scoped KPIs (Strictly for Active Company)
+        $totalLeads = Lead::where('company_id', $companyId)->count();
+        $totalCustomers = Customer::where('company_id', $companyId)->count();
+        $totalInvoices = Invoice::where('company_id', $companyId)->count();
+        $totalProducts = Product::where('company_id', $companyId)->count();
+        $totalPurchases = Purchase::where('company_id', $companyId)->count();
+
+        // Financial KPIs for active company
+        $totalIncome = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
+        $totalExpenses = Expense::where('company_id', $companyId)->sum('amount');
         $netProfit = $totalIncome - $totalExpenses;
 
-        $recentInvoices = Invoice::with('customer')->latest()->take(5)->get();
-        $recentLeads = Lead::latest()->take(5)->get();
+        $recentInvoices = Invoice::where('company_id', $companyId)->with('customer')->latest()->take(6)->get();
+        $recentLeads = Lead::where('company_id', $companyId)->latest()->take(6)->get();
+
+        // Global Platform Stats (for Super Admin summary card)
+        $isSuperAdmin = $user->isSuperAdmin();
+        $totalCompanies = Company::count();
+        $totalUsers = User::count();
 
         return view('dashboard.company', compact(
             'company', 'userCompanies', 'currency', 'totalLeads', 'totalCustomers', 
             'totalInvoices', 'totalProducts', 'totalPurchases', 'totalIncome', 'totalExpenses', 
-            'netProfit', 'recentInvoices', 'recentLeads'
+            'netProfit', 'recentInvoices', 'recentLeads', 'isSuperAdmin', 'totalCompanies', 'totalUsers'
         ));
     }
 }

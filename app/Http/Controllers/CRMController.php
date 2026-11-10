@@ -15,7 +15,8 @@ class CRMController extends Controller
     // --- CUSTOMERS ---
     public function indexCustomers()
     {
-        $customers = Customer::withCount(['invoices', 'leads'])->latest()->get();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $customers = Customer::where('company_id', $companyId)->withCount(['invoices', 'leads'])->latest()->get();
         return view('crm.customers.index', compact('customers'));
     }
 
@@ -103,8 +104,9 @@ class CRMController extends Controller
     // --- LEADS ---
     public function indexLeads()
     {
-        $leads = Lead::with('customer')->latest()->get();
-        $customers = Customer::all();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $leads = Lead::where('company_id', $companyId)->with('customer')->latest()->get();
+        $customers = Customer::where('company_id', $companyId)->get();
         return view('crm.leads.index', compact('leads', 'customers'));
     }
 

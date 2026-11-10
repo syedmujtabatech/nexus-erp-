@@ -16,6 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
 
     <!-- Icons: Boxicons & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -301,7 +303,7 @@
             $user = auth()->user();
             $isSuperAdmin = $user->isSuperAdmin();
             $isCompanyOwner = $user->isCompanyOwner();
-            $currentCompany = $user->currentCompany;
+            $currentCompany = \App\Models\Company::find($user->current_company_id) ?? $user->currentCompany ?? $user->companies->first();
 
             $can = function($permissionKey) use ($user) {
                 return $user->hasPermission($permissionKey);
@@ -363,85 +365,10 @@
                                     <div>Activity & Audit Logs</div>
                                 </a>
                             </li>
+                        @endif
 
-                            <li class="menu-header small text-uppercase">
-                                <span class="menu-header-text">Platform Modules (All Data)</span>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('leads.*') ? 'active' : '' }}">
-                                <a href="{{ route('leads.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-target-lock"></i>
-                                    <div>Leads Pipeline</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('customers.*') ? 'active' : '' }}">
-                                <a href="{{ route('customers.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-user-pin"></i>
-                                    <div>Customers Directory</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                                <a href="{{ route('products.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-package"></i>
-                                    <div>Products & Inventory</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('quotations.*') ? 'active' : '' }}">
-                                <a href="{{ route('quotations.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-file-blank"></i>
-                                    <div>Quotations</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
-                                <a href="{{ route('invoices.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-receipt"></i>
-                                    <div>Sales Invoices</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('purchases.*') ? 'active' : '' }}">
-                                <a href="{{ route('purchases.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-cart"></i>
-                                    <div>Supplier Purchases</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('supplier_ledger.*') ? 'active' : '' }}">
-                                <a href="{{ route('supplier_ledger.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-file-find"></i>
-                                    <div>Supplier Statement</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
-                                <a href="{{ route('accounts.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-wallet"></i>
-                                    <div>Bank & Cash Accounts</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('vendors.*') ? 'active' : '' }}">
-                                <a href="{{ route('vendors.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-store-alt"></i>
-                                    <div>Vendors</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
-                                <a href="{{ route('expenses.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-credit-card"></i>
-                                    <div>Expenses Log</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('ledger.*') ? 'active' : '' }}">
-                                <a href="{{ route('ledger.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-book-open"></i>
-                                    <div>Customer Ledger</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                                <a href="{{ route('reports.profit_loss') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-line-chart"></i>
-                                    <div>Profit & Loss Report</div>
-                                </a>
-                            </li>
-                        @else
-                            <!-- Company Tenant Menu (Scoped & Permission Checked) -->
-                            @if($user->companies->count() > 0)
+                        <!-- Company Tenant Menu (Scoped & Permission Checked) -->
+                        @if($user->companies->count() > 0)
                                 @if($can('leads_view') || $can('customers_view'))
                                     <li class="menu-header small text-uppercase">
                                         <span class="menu-header-text">CRM (Sales & Clients)</span>
@@ -559,8 +486,8 @@
                                     @endif
                                 @endif
 
-                                <!-- Management Section (Owner Only) -->
-                                @if($isCompanyOwner)
+                                <!-- Management Section (Owner & Super Admin) -->
+                                @if($isCompanyOwner || $isSuperAdmin)
                                     <li class="menu-header small text-uppercase">
                                         <span class="menu-header-text">Company Management</span>
                                     </li>
@@ -594,7 +521,6 @@
                                     </a>
                                 </li>
                             @endif
-                        @endif
                     </ul>
                 </aside>
                 <!-- / Menu -->
@@ -613,14 +539,14 @@
                         <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                             <!-- Workspace Indicator / Switcher -->
                             <div class="navbar-nav align-items-center">
-                                @if(!$isSuperAdmin && $user->companies->count() > 0)
-                                    <div class="nav-item d-flex align-items-center">
+                                @if($user->companies->count() > 0)
+                                    <div class="nav-item d-flex align-items-center flex-wrap gap-2">
                                         <form action="{{ route('company.switch') }}" method="POST" class="d-flex align-items-center m-0">
                                             @csrf
                                             <span class="badge navbar-workspace-badge me-2 px-3 py-1"><i class="bx bx-buildings me-1"></i> WORKSPACE:</span>
                                             <select name="company_id" onchange="this.form.submit()" class="form-select form-select-sm border-0 shadow-none fw-semibold" style="cursor: pointer; width: auto; background-color: #f5f5f9;">
                                                 @foreach($user->companies as $comp)
-                                                    <option value="{{ $comp->id }}" {{ $user->current_company_id == $comp->id ? 'selected' : '' }}>
+                                                    <option value="{{ $comp->id }}" {{ ($user->current_company_id == $comp->id || (!$user->current_company_id && $loop->first)) ? 'selected' : '' }}>
                                                         {{ $comp->name }} ({{ $comp->currency }})
                                                     </option>
                                                 @endforeach
@@ -633,21 +559,23 @@
                                             $plan = $activeComp->plan ?? 'trial';
                                         @endphp
                                         @if($plan === 'premium')
-                                            <span class="badge navbar-plan-badge ms-2 px-3 py-1"><i class="bx bx-diamond me-1"></i> PREMIUM SUITE</span>
+                                            <span class="badge navbar-plan-badge px-3 py-1"><i class="bx bx-diamond me-1"></i> PREMIUM SUITE</span>
                                         @elseif($plan === 'advance')
-                                            <span class="badge navbar-plan-badge ms-2 px-3 py-1"><i class="bx bx-crown me-1"></i> ADVANCE PRO</span>
+                                            <span class="badge navbar-plan-badge px-3 py-1"><i class="bx bx-crown me-1"></i> ADVANCE PRO</span>
                                         @elseif($plan === 'basic')
-                                            <span class="badge navbar-plan-badge ms-2 px-3 py-1"><i class="bx bx-shield-alt me-1"></i> BASIC PLAN (5 USERS)</span>
+                                            <span class="badge navbar-plan-badge px-3 py-1"><i class="bx bx-shield-alt me-1"></i> BASIC PLAN (5 USERS)</span>
                                         @else
-                                            <span class="badge bg-label-warning ms-2 px-3 py-1 fw-bold"><i class="bx bx-time me-1"></i> 14-DAY TRIAL</span>
+                                            <span class="badge bg-label-warning px-3 py-1 fw-bold"><i class="bx bx-time me-1"></i> 14-DAY TRIAL</span>
+                                        @endif
+
+                                        @if($isSuperAdmin)
+                                            <span class="badge bg-label-danger px-2 py-1 fw-semibold"><i class="bx bx-shield-quarter me-1"></i> Super Admin</span>
                                         @endif
                                     </div>
-                                @elseif(!$isSuperAdmin && $user->companies->count() == 0)
+                                @elseif($user->companies->count() == 0)
                                     <a href="{{ route('companies.index') }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bx bx-plus me-1"></i> Set Up Your Company Workspace
                                     </a>
-                                @elseif($isSuperAdmin)
-                                    <span class="badge bg-label-danger py-2 px-3 fw-bold"><i class="bx bx-crown me-1"></i> Super Admin Global Monitor</span>
                                 @endif
                             </div>
 

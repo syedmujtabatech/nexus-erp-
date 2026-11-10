@@ -25,7 +25,8 @@ class AccountingController extends Controller
     // ==========================================
     public function indexVendors()
     {
-        $vendors = Vendor::withCount(['expenses', 'purchases'])->latest()->get();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $vendors = Vendor::where('company_id', $companyId)->withCount(['expenses', 'purchases'])->latest()->get();
         return view('accounting.vendors.index', compact('vendors'));
     }
 
@@ -83,7 +84,8 @@ class AccountingController extends Controller
     // ==========================================
     public function indexPurchases(Request $request)
     {
-        $query = Purchase::with(['vendor', 'createdBy'])->latest();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $query = Purchase::where('company_id', $companyId)->with(['vendor', 'createdBy'])->latest();
 
         if ($request->filled('vendor_id')) {
             $query->where('vendor_id', $request->vendor_id);
@@ -99,11 +101,11 @@ class AccountingController extends Controller
         }
 
         $purchases = $query->paginate(20);
-        $vendors = Vendor::all();
-        $accounts = Account::all();
+        $vendors = Vendor::where('company_id', $companyId)->get();
+        $accounts = Account::where('company_id', $companyId)->get();
 
-        $totalPurchases = Purchase::sum('total');
-        $totalPaid = Purchase::sum('paid_amount');
+        $totalPurchases = Purchase::where('company_id', $companyId)->sum('total');
+        $totalPaid = Purchase::where('company_id', $companyId)->sum('paid_amount');
         $totalOutstanding = $totalPurchases - $totalPaid;
 
         return view('accounting.purchases.index', compact(
@@ -113,9 +115,10 @@ class AccountingController extends Controller
 
     public function createPurchase()
     {
-        $vendors = Vendor::all();
-        $products = Product::all();
-        $accounts = Account::all();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $vendors = Vendor::where('company_id', $companyId)->get();
+        $products = Product::where('company_id', $companyId)->get();
+        $accounts = Account::where('company_id', $companyId)->get();
         return view('accounting.purchases.create', compact('vendors', 'products', 'accounts'));
     }
 
@@ -331,7 +334,8 @@ class AccountingController extends Controller
     // ==========================================
     public function indexAccounts()
     {
-        $accounts = Account::withCount('transactions')->latest()->get();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $accounts = Account::where('company_id', $companyId)->withCount('transactions')->latest()->get();
         $totalLiquidity = $accounts->sum('current_balance');
         return view('accounting.accounts.index', compact('accounts', 'totalLiquidity'));
     }
@@ -438,7 +442,8 @@ class AccountingController extends Controller
     // ==========================================
     public function indexExpenses(Request $request)
     {
-        $query = Expense::with(['vendor', 'account'])->latest();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $query = Expense::where('company_id', $companyId)->with(['vendor', 'account'])->latest();
 
         if ($request->filled('category')) {
             $query->where('category', $request->category);
@@ -464,9 +469,9 @@ class AccountingController extends Controller
         $expenseCount = $expenses->total();
         $averageExpense = $expenseCount > 0 ? ($totalExpenseAmount / $expenseCount) : 0;
 
-        $categories = Expense::select('category')->distinct()->pluck('category');
-        $vendors = Vendor::all();
-        $accounts = Account::all();
+        $categories = Expense::where('company_id', $companyId)->select('category')->distinct()->pluck('category');
+        $vendors = Vendor::where('company_id', $companyId)->get();
+        $accounts = Account::where('company_id', $companyId)->get();
 
         return view('accounting.expenses.index', compact(
             'expenses', 'vendors', 'accounts', 'categories', 'totalExpenseAmount', 'expenseCount', 'averageExpense'
@@ -562,7 +567,8 @@ class AccountingController extends Controller
     // ==========================================
     public function indexLedger(Request $request)
     {
-        $customers = Customer::all();
+        $companyId = Auth::user()->current_company_id ?? 5;
+        $customers = Customer::where('company_id', $companyId)->get();
         $selectedCustomer = null;
         $invoices = collect();
         $transactions = collect();
@@ -571,10 +577,10 @@ class AccountingController extends Controller
         $balanceDue = 0;
 
         if ($request->has('customer_id') && $request->customer_id) {
-            $selectedCustomer = Customer::findOrFail($request->customer_id);
-            $invoices = Invoice::where('customer_id', $selectedCustomer->id)->latest()->get();
+            $selectedCustomer = Customer::where('company_id', $companyId)->findOrFail($request->customer_id);
+            $invoices = Invoice::where('company_id', $companyId)->where('customer_id', $selectedCustomer->id)->latest()->get();
             $invoiceIds = $invoices->pluck('id');
-            $transactions = Transaction::whereIn('invoice_id', $invoiceIds)->where('type', 'income')->latest()->get();
+            $transactions = Transaction::where('company_id', $companyId)->whereIn('invoice_id', $invoiceIds)->where('type', 'income')->latest()->get();
 
             $totalBilled = $invoices->sum('total');
             $totalPaid = $invoices->sum('paid_amount');
@@ -592,12 +598,16 @@ class AccountingController extends Controller
     public function reportProfitLoss()
     {
         $company = Auth::user()->currentCompany;
-        $currency = $company ? $company->currency : 'USD';
+        $companyId = $company ? $company->id : 5;
+        $currency = $company ? ($company->currency ?: 'PKR') : 'PKR';
 
-        $totalSalesIncome = Transaction::where('type', 'income')->sum('amount');
+        $totalSalesIncome = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
 
         $cogs = 0;
-        $invoiceItems = InvoiceItem::with('product')->get();
+        $invoiceItems = InvoiceItem::whereHasMorph('itemable', [Invoice::class], function($q) use ($companyId) {
+            $q->where('company_id', $companyId);
+        })->with('product')->get();
+
         foreach ($invoiceItems as $item) {
             if ($item->product) {
                 $cogs += ($item->product->purchase_price * $item->quantity);
@@ -605,7 +615,7 @@ class AccountingController extends Controller
         }
 
         $grossProfit = $totalSalesIncome - $cogs;
-        $totalExpenses = Expense::sum('amount');
+        $totalExpenses = Expense::where('company_id', $companyId)->sum('amount');
         $netProfit = $grossProfit - $totalExpenses;
 
         return view('accounting.reports.profit_loss', compact(
@@ -616,18 +626,22 @@ class AccountingController extends Controller
     public function pdfProfitLoss()
     {
         $company = Auth::user()->currentCompany;
-        $currency = $company ? $company->currency : 'USD';
+        $companyId = $company ? $company->id : 5;
+        $currency = $company ? ($company->currency ?: 'PKR') : 'PKR';
 
-        $totalSalesIncome = Transaction::where('type', 'income')->sum('amount');
+        $totalSalesIncome = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
         $cogs = 0;
-        $invoiceItems = InvoiceItem::with('product')->get();
+        $invoiceItems = InvoiceItem::whereHasMorph('itemable', [Invoice::class], function($q) use ($companyId) {
+            $q->where('company_id', $companyId);
+        })->with('product')->get();
+
         foreach ($invoiceItems as $item) {
             if ($item->product) {
                 $cogs += ($item->product->purchase_price * $item->quantity);
             }
         }
         $grossProfit = $totalSalesIncome - $cogs;
-        $totalExpenses = Expense::sum('amount');
+        $totalExpenses = Expense::where('company_id', $companyId)->sum('amount');
         $netProfit = $grossProfit - $totalExpenses;
 
         $pdf = Pdf::loadView('accounting.reports.pdf_profit_loss', compact(
