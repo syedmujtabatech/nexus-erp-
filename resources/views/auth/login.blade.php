@@ -50,6 +50,18 @@
             <hr class="flex-grow-1 m-0">
         </div>
 
+        <!-- Quick Demo Credentials Box -->
+        <div class="p-3 mb-3 rounded-3" style="background: rgba(37, 99, 235, 0.06); border: 1px dashed rgba(37, 99, 235, 0.3);">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold text-primary small"><i class="bx bx-shield-quarter me-1"></i> Quick Demo Access</span>
+                <span class="badge bg-primary" style="font-size: 0.65rem;">Pre-filled</span>
+            </div>
+            <div class="text-muted small" style="font-size: 0.8rem;">
+                <strong>Email:</strong> <code>syedmujtaba.dev@gmail.com</code><br>
+                <strong>Password:</strong> <code>mujtaba123</code>
+            </div>
+        </div>
+
         <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="mb-3">
@@ -62,7 +74,7 @@
                         id="email"
                         name="email"
                         placeholder="owner@domain.com"
-                        value="{{ old('email') }}"
+                        value="{{ old('email', 'syedmujtaba.dev@gmail.com') }}"
                         required
                         autofocus
                     />
@@ -79,6 +91,7 @@
                         class="form-control border-start-0 ps-1"
                         name="password"
                         placeholder="••••••••"
+                        value="mujtaba123"
                         required
                     />
                 </div>
