@@ -19,9 +19,9 @@
 <div class="row">
     <!-- Total Leads -->
     <div class="col-lg-3 col-md-6 col-6 mb-4">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="card-title d-flex align-items-start justify-content-between mb-2">
                     <div class="avatar flex-shrink-0">
                         <span class="avatar-initial rounded bg-label-info"><i class="bx bx-target-lock fs-4"></i></span>
                     </div>
@@ -36,9 +36,9 @@
 
     <!-- Total Customers -->
     <div class="col-lg-3 col-md-6 col-6 mb-4">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="card-title d-flex align-items-start justify-content-between mb-2">
                     <div class="avatar flex-shrink-0">
                         <span class="avatar-initial rounded bg-label-success"><i class="bx bx-user-check fs-4"></i></span>
                     </div>
@@ -53,9 +53,9 @@
 
     <!-- Total Invoices -->
     <div class="col-lg-3 col-md-6 col-6 mb-4">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="card-title d-flex align-items-start justify-content-between mb-2">
                     <div class="avatar flex-shrink-0">
                         <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-receipt fs-4"></i></span>
                     </div>
@@ -70,18 +70,18 @@
 
     <!-- Net Profit -->
     <div class="col-lg-3 col-md-6 col-6 mb-4">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="card-title d-flex align-items-start justify-content-between mb-2">
                     <div class="avatar flex-shrink-0">
                         <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-wallet fs-4"></i></span>
                     </div>
                     <a href="{{ route('reports.profit_loss') }}" class="btn btn-sm btn-icon btn-outline-primary"><i class="bx bx-chevron-right"></i></a>
                 </div>
                 <span class="fw-semibold d-block mb-1 text-muted">Net Profit ({{ $currency }})</span>
-                <h3 class="card-title mb-1 fw-bold {{ $netProfit >= 0 ? 'text-success' : 'text-danger' }}">
-                    {{ number_format($netProfit, 2) }}
-                </h3>
+                <h4 class="card-title mb-1 fw-bold {{ $netProfit >= 0 ? 'text-success' : 'text-danger' }}" style="white-space: nowrap; font-size: 1.38rem; letter-spacing: -0.5px;">
+                    {{ number_format($netProfit) }}
+                </h4>
                 <small class="{{ $netProfit >= 0 ? 'text-success' : 'text-danger' }} fw-semibold">
                     <i class="bx {{ $netProfit >= 0 ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt' }}"></i> Revenue - Cost
                 </small>
@@ -173,16 +173,16 @@
                 <h6 class="text-muted small text-uppercase fw-semibold mb-3">Financial Performance</h6>
                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                     <span class="text-muted">Total Sales Invoiced:</span>
-                    <strong class="text-dark">{{ number_format($totalIncome, 2) }} {{ $currency }}</strong>
+                    <strong class="text-dark">{{ number_format($totalIncome) }} {{ $currency }}</strong>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                     <span class="text-muted">Operating Expenses:</span>
-                    <strong class="text-danger">{{ number_format($totalExpenses, 2) }} {{ $currency }}</strong>
+                    <strong class="text-danger">{{ number_format($totalExpenses) }} {{ $currency }}</strong>
                 </div>
                 <div class="d-flex justify-content-between align-items-center pt-1">
                     <span class="fw-bold">Net Balance:</span>
                     <strong class="{{ $netProfit >= 0 ? 'text-success' : 'text-danger' }} fs-5">
-                        {{ number_format($netProfit, 2) }} {{ $currency }}
+                        {{ number_format($netProfit) }} {{ $currency }}
                     </strong>
                 </div>
 

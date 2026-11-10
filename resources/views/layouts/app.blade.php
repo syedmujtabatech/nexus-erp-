@@ -540,17 +540,19 @@
                             <!-- Workspace Indicator / Switcher -->
                             <div class="navbar-nav align-items-center">
                                 @if($user->companies->count() > 0)
-                                    <div class="nav-item d-flex align-items-center flex-wrap gap-2">
+                                    <div class="nav-item d-flex align-items-center gap-2">
                                         <form action="{{ route('company.switch') }}" method="POST" class="d-flex align-items-center m-0">
                                             @csrf
-                                            <span class="badge navbar-workspace-badge me-2 px-3 py-1"><i class="bx bx-buildings me-1"></i> WORKSPACE:</span>
-                                            <select name="company_id" onchange="this.form.submit()" class="form-select form-select-sm border-0 shadow-none fw-semibold" style="cursor: pointer; width: auto; background-color: #f5f5f9;">
-                                                @foreach($user->companies as $comp)
-                                                    <option value="{{ $comp->id }}" {{ ($user->current_company_id == $comp->id || (!$user->current_company_id && $loop->first)) ? 'selected' : '' }}>
-                                                        {{ $comp->name }} ({{ $comp->currency }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            <div class="d-flex align-items-center px-3 py-1 rounded-3" style="background: #f1f5f9; border: 1px solid #e2e8f0;">
+                                                <i class="bx bx-buildings text-primary me-2 fs-5"></i>
+                                                <select name="company_id" onchange="this.form.submit()" class="form-select form-select-sm border-0 p-0 fw-bold text-dark shadow-none" style="cursor: pointer; width: auto; background: transparent; font-size: 0.85rem;">
+                                                    @foreach($user->companies as $comp)
+                                                        <option value="{{ $comp->id }}" {{ ($user->current_company_id == $comp->id || (!$user->current_company_id && $loop->first)) ? 'selected' : '' }}>
+                                                            {{ $comp->name }} ({{ $comp->currency }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </form>
 
                                         <!-- SaaS Plan Badge -->
@@ -559,17 +561,13 @@
                                             $plan = $activeComp->plan ?? 'trial';
                                         @endphp
                                         @if($plan === 'premium')
-                                            <span class="badge navbar-plan-badge px-3 py-1"><i class="bx bx-diamond me-1"></i> PREMIUM SUITE</span>
+                                            <span class="badge bg-label-primary px-3 py-2 fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.72rem;"><i class="bx bx-diamond me-1"></i> Premium Suite</span>
                                         @elseif($plan === 'advance')
-                                            <span class="badge navbar-plan-badge px-3 py-1"><i class="bx bx-crown me-1"></i> ADVANCE PRO</span>
+                                            <span class="badge bg-label-info px-3 py-2 fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.72rem;"><i class="bx bx-crown me-1"></i> Advance Pro</span>
                                         @elseif($plan === 'basic')
-                                            <span class="badge navbar-plan-badge px-3 py-1"><i class="bx bx-shield-alt me-1"></i> BASIC PLAN (5 USERS)</span>
+                                            <span class="badge bg-label-secondary px-3 py-2 fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.72rem;"><i class="bx bx-shield-alt me-1"></i> Basic Plan</span>
                                         @else
-                                            <span class="badge bg-label-warning px-3 py-1 fw-bold"><i class="bx bx-time me-1"></i> 14-DAY TRIAL</span>
-                                        @endif
-
-                                        @if($isSuperAdmin)
-                                            <span class="badge bg-label-danger px-2 py-1 fw-semibold"><i class="bx bx-shield-quarter me-1"></i> Super Admin</span>
+                                            <span class="badge bg-label-warning px-3 py-2 fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.72rem;"><i class="bx bx-time me-1"></i> 14-Day Trial</span>
                                         @endif
                                     </div>
                                 @elseif($user->companies->count() == 0)
