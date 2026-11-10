@@ -145,31 +145,31 @@
         </div>
 
         <div class="account-list">
-            <!-- Account 1: Syed Mujtaba (Super Admin) -->
-            <form action="{{ route('oauth.google.callback') }}" method="POST" id="form-mujtaba">
+            <!-- Account 1: Nexus Enterprise Admin (Super Admin) -->
+            <form action="{{ route('oauth.google.callback') }}" method="POST" id="form-admin">
                 @csrf
-                <input type="hidden" name="email" value="syedmujtaba.dev@gmail.com">
-                <div class="account-item" onclick="submitGoogleAuth('form-mujtaba', 'Syed Mujtaba')">
-                    <div class="avatar" style="background: #1a73e8;">S</div>
+                <input type="hidden" name="email" value="admin@nexus-erp.com">
+                <div class="account-item" onclick="submitGoogleAuth('form-admin', 'Nexus Enterprise Admin')">
+                    <div class="avatar" style="background: #1a73e8;">N</div>
                     <div class="account-info">
-                        <div class="account-name">Syed Mujtaba</div>
-                        <div class="account-email">syedmujtaba.dev@gmail.com</div>
+                        <div class="account-name">Nexus Enterprise Admin</div>
+                        <div class="account-email">admin@nexus-erp.com</div>
                     </div>
                     <span class="account-badge">Super Admin</span>
                 </div>
             </form>
 
-            <!-- Account 2: Admin Direct -->
-            <form action="{{ route('oauth.google.callback') }}" method="POST" id="form-admin">
+            <!-- Account 2: Nexus Operations Director -->
+            <form action="{{ route('oauth.google.callback') }}" method="POST" id="form-director">
                 @csrf
-                <input type="hidden" name="email" value="admin@nexus-erp.com">
-                <div class="account-item" onclick="submitGoogleAuth('form-admin', 'Nexus Enterprise Admin')">
-                    <div class="avatar" style="background: #0d652d;">A</div>
+                <input type="hidden" name="email" value="director@nexus-erp.com">
+                <div class="account-item" onclick="submitGoogleAuth('form-director', 'Nexus Operations Director')">
+                    <div class="avatar" style="background: #0d652d;">D</div>
                     <div class="account-info">
-                        <div class="account-name">Nexus System Admin</div>
-                        <div class="account-email">admin@nexus-erp.com</div>
+                        <div class="account-name">Nexus Operations Director</div>
+                        <div class="account-email">director@nexus-erp.com</div>
                     </div>
-                    <span class="account-badge">Corporate</span>
+                    <span class="account-badge">Executive</span>
                 </div>
             </form>
 

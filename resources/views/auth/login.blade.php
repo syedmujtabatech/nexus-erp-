@@ -349,7 +349,7 @@
                             class="form-control"
                             id="email"
                             name="email"
-                            value="{{ old('email', 'syedmujtaba.dev@gmail.com') }}"
+                            value="{{ old('email', 'admin@nexus-erp.com') }}"
                             placeholder="admin@nexus-erp.com"
                             required
                             autofocus
