@@ -187,18 +187,30 @@
                     <small class="text-muted d-block"><i class="bx bx-phone me-1"></i> {{ $company->phone ?? 'N/A' }}</small>
                 </div>
 
-                <h6 class="text-muted small text-uppercase fw-semibold mb-3">Financial Performance</h6>
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                    <span class="text-muted">Total Sales Invoiced:</span>
-                    <strong class="text-dark">{{ number_format($totalIncome) }} {{ $currency }}</strong>
+                <h6 class="text-muted small text-uppercase fw-semibold mb-3">Financial Performance (GAAP)</h6>
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+                    <span class="text-muted small">1. Total Revenue:</span>
+                    <strong class="text-success">{{ number_format($totalRevenue) }} {{ $currency }}</strong>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                    <span class="text-muted">Operating Expenses:</span>
-                    <strong class="text-danger">{{ number_format($totalExpenses) }} {{ $currency }}</strong>
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+                    <span class="text-muted small">2. Less: COGS:</span>
+                    <strong class="text-danger">-{{ number_format($cogs) }} {{ $currency }}</strong>
                 </div>
-                <div class="d-flex justify-content-between align-items-center pt-1">
-                    <span class="fw-bold">Net Balance:</span>
-                    <strong class="{{ $netProfit >= 0 ? 'text-success' : 'text-danger' }} fs-5">
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom bg-light px-2 py-1 rounded">
+                    <span class="fw-semibold small">3. Gross Profit:</span>
+                    <strong class="{{ $grossProfit >= 0 ? 'text-primary' : 'text-danger' }}">{{ number_format($grossProfit) }} {{ $currency }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+                    <span class="text-muted small">4. Operating Exp:</span>
+                    <strong class="text-danger">-{{ number_format($operatingExpenses) }} {{ $currency }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom bg-light px-2 py-1 rounded">
+                    <span class="fw-semibold small">5. Operating Profit:</span>
+                    <strong class="{{ $operatingProfit >= 0 ? 'text-info' : 'text-danger' }}">{{ number_format($operatingProfit) }} {{ $currency }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-2 px-2 py-1 rounded mt-1" style="background: rgba(37,99,235,0.08);">
+                    <span class="fw-bold small">6. Net Profit:</span>
+                    <strong class="{{ $netProfit >= 0 ? 'text-success' : 'text-danger' }} fs-6">
                         {{ number_format($netProfit) }} {{ $currency }}
                     </strong>
                 </div>

@@ -603,25 +603,46 @@ class AccountingController extends Controller
         $companyId = $company ? $company->id : 5;
         $currency = $company ? ($company->currency ?: 'PKR') : 'PKR';
 
-        $totalSalesIncome = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
+        // 1. Total Revenue (Sales Income & Receipts)
+        $totalRevenue = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
+        if ($totalRevenue == 0) {
+            $totalRevenue = Invoice::where('company_id', $companyId)->where('status', 'paid')->sum('total');
+        }
 
+        // 2. Cost of Goods Sold (COGS)
         $cogs = 0;
         $invoiceItems = InvoiceItem::whereHasMorph('itemable', [Invoice::class], function($q) use ($companyId) {
             $q->where('company_id', $companyId);
         })->with('product')->get();
 
         foreach ($invoiceItems as $item) {
-            if ($item->product) {
+            if ($item->product && $item->product->purchase_price) {
                 $cogs += ($item->product->purchase_price * $item->quantity);
             }
         }
+        if ($cogs == 0) {
+            $cogs = Purchase::where('company_id', $companyId)->sum('total');
+        }
 
-        $grossProfit = $totalSalesIncome - $cogs;
-        $totalExpenses = Expense::where('company_id', $companyId)->sum('amount');
-        $netProfit = $grossProfit - $totalExpenses;
+        // 3. Gross Profit = Total Revenue - COGS
+        $grossProfit = $totalRevenue - $cogs;
+
+        // 4. Operating Expenses (OPEX: Rent, Utilities, Salaries, Overhead)
+        $operatingExpenses = Expense::where('company_id', $companyId)->sum('amount');
+
+        // 5. Operating Profit (EBIT) = Gross Profit - Operating Expenses
+        $operatingProfit = $grossProfit - $operatingExpenses;
+
+        // 6. Net Profit (Final Bottom-Line Margin)
+        $netProfit = $operatingProfit;
+
+        // Backwards compatibility variable aliases
+        $totalSalesIncome = $totalRevenue;
+        $totalExpenses = $operatingExpenses;
 
         return view('accounting.reports.profit_loss', compact(
-            'currency', 'totalSalesIncome', 'cogs', 'grossProfit', 'totalExpenses', 'netProfit'
+            'currency', 'totalRevenue', 'cogs', 'grossProfit', 'operatingExpenses', 'operatingProfit', 'netProfit',
+            'totalSalesIncome', 'totalExpenses'
         ));
     }
 
@@ -631,23 +652,45 @@ class AccountingController extends Controller
         $companyId = $company ? $company->id : 5;
         $currency = $company ? ($company->currency ?: 'PKR') : 'PKR';
 
-        $totalSalesIncome = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
+        // 1. Total Revenue
+        $totalRevenue = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
+        if ($totalRevenue == 0) {
+            $totalRevenue = Invoice::where('company_id', $companyId)->where('status', 'paid')->sum('total');
+        }
+
+        // 2. Cost of Goods Sold (COGS)
         $cogs = 0;
         $invoiceItems = InvoiceItem::whereHasMorph('itemable', [Invoice::class], function($q) use ($companyId) {
             $q->where('company_id', $companyId);
         })->with('product')->get();
 
         foreach ($invoiceItems as $item) {
-            if ($item->product) {
+            if ($item->product && $item->product->purchase_price) {
                 $cogs += ($item->product->purchase_price * $item->quantity);
             }
         }
-        $grossProfit = $totalSalesIncome - $cogs;
-        $totalExpenses = Expense::where('company_id', $companyId)->sum('amount');
-        $netProfit = $grossProfit - $totalExpenses;
+        if ($cogs == 0) {
+            $cogs = Purchase::where('company_id', $companyId)->sum('total');
+        }
+
+        // 3. Gross Profit
+        $grossProfit = $totalRevenue - $cogs;
+
+        // 4. Operating Expenses
+        $operatingExpenses = Expense::where('company_id', $companyId)->sum('amount');
+
+        // 5. Operating Profit
+        $operatingProfit = $grossProfit - $operatingExpenses;
+
+        // 6. Net Profit
+        $netProfit = $operatingProfit;
+
+        $totalSalesIncome = $totalRevenue;
+        $totalExpenses = $operatingExpenses;
 
         $pdf = Pdf::loadView('accounting.reports.pdf_profit_loss', compact(
-            'company', 'currency', 'totalSalesIncome', 'cogs', 'grossProfit', 'totalExpenses', 'netProfit'
+            'company', 'currency', 'totalRevenue', 'cogs', 'grossProfit', 'operatingExpenses', 'operatingProfit', 'netProfit',
+            'totalSalesIncome', 'totalExpenses'
         ));
 
         return $pdf->download("Profit_Loss_Report_" . now()->format('Y-m-d') . ".pdf");
