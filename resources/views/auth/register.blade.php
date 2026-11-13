@@ -8,7 +8,7 @@
         <!-- Brand Logo Header -->
         <div class="text-center mb-4">
             <div class="d-inline-flex align-items-center justify-content-center gap-2 mb-2">
-                <img src="{{ asset('assets/img/logo.svg') }}" width="44" height="44" alt="Nexus Logo" />
+                <img src="/assets/img/logo.svg" width="44" height="44" alt="Nexus Logo" />
                 <div class="text-start">
                     <span class="fw-bold fs-3 d-block lh-1" style="color: #0f172a; letter-spacing: -0.5px;">
                         NEXUS<span style="color: #2563eb;">ERP</span>
@@ -130,6 +130,33 @@
                             required
                         />
                     </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label for="company_name" class="form-label fw-semibold text-muted small text-uppercase">Company / Business Name <span class="text-primary">(Setup Now or Later)</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bx bx-buildings fs-5"></i></span>
+                        <input
+                            type="text"
+                            class="form-control border-start-0 ps-1"
+                            id="company_name"
+                            name="company_name"
+                            placeholder="e.g. Nexus Traders Pvt Ltd"
+                            value="{{ old('company_name') }}"
+                        />
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="currency" class="form-label fw-semibold text-muted small text-uppercase">Currency</label>
+                    <select name="currency" id="currency" class="form-select">
+                        <option value="PKR" selected>PKR (Rs)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="AED">AED (AED)</option>
+                        <option value="SAR">SAR (SAR)</option>
+                        <option value="EUR">EUR (€)</option>
+                    </select>
                 </div>
             </div>
 

@@ -29,4 +29,24 @@ class Company extends Model
     {
         return $this->belongsToMany(User::class, 'company_user')->withPivot('role_id', 'permissions');
     }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

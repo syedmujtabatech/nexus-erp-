@@ -41,10 +41,18 @@ class AuthController extends Controller
             // Log successful login activity with IP
             ActivityLogger::log('user_login', "User {$user->name} logged in successfully from IP: " . $request->ip());
 
-            if ($user->companies->count() > 1) {
+            // Multi-Company vs Super Admin Logic
+            if ($user->isSuperAdmin()) {
+                // Super Admin goes directly to Global Dashboard with NO popup
+                $user->update(['current_company_id' => null]);
+                session(['company_modal_dismissed' => true]);
+                session()->forget('show_company_select_modal');
+            } elseif ($user->companies->count() > 1) {
+                // Regular Admin with multiple companies sees the Workspace Select popup
                 session(['show_company_select_modal' => true]);
                 session()->forget('company_modal_dismissed');
             } else {
+                // Single or 0 companies - no popup
                 session(['company_modal_dismissed' => true]);
                 session()->forget('show_company_select_modal');
             }
@@ -67,27 +75,47 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string',
             'password' => 'required|min:6|confirmed',
+            'company_name' => 'nullable|string|max:255',
+            'currency' => 'nullable|string|max:10',
         ]);
 
         $otp = rand(100000, 999999);
 
-        // Create User with Role 2 (Company Owner)
+        // 1. Create User with Role 2 (Company Admin / Owner)
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role_id' => 2, // Role 2: Company Owner
+            'role_id' => 2, // Role 2: Company Admin
             'otp' => $otp,
             'is_otp_verified' => false,
         ]);
 
+        // 2. If user entered a Company Name during registration, create the company immediately
+        if (!empty($request->company_name)) {
+            $company = Company::create([
+                'user_id' => $user->id,
+                'name' => $request->company_name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'currency' => $request->currency ?? 'PKR',
+                'plan' => 'trial',
+                'max_users' => 5,
+                'max_invoices' => 50,
+                'plan_expires_at' => now()->addDays(30),
+            ]);
+
+            $user->companies()->attach($company->id, ['role_id' => 2]);
+            $user->update(['current_company_id' => $company->id]);
+        }
+
         Auth::login($user);
 
         // Log user registration activity with IP
-        ActivityLogger::log('user_register', "New user registered: {$user->name} ({$user->email})");
+        ActivityLogger::log('user_register', "New user registered: {$user->name} ({$user->email}) as Company Admin");
 
-        // Send OTP via SMTP Gmail
+        // Send OTP via SMTP
         try {
             Mail::to($user->email)->send(new OtpMail($otp, $user->name));
         } catch (\Exception $e) {
@@ -138,11 +166,19 @@ class AuthController extends Controller
 
     public function switchCompany(Request $request)
     {
+        $user = Auth::user();
+
+        // Super Admin switching to Global Platform Overview
+        if ($request->company_id === 'all' && $user->isSuperAdmin()) {
+            $user->update(['current_company_id' => null]);
+            session(['company_modal_dismissed' => true]);
+            session()->forget('show_company_select_modal');
+            return redirect()->route('dashboard')->with('success', 'Switched to Global Platform View.');
+        }
+
         $request->validate([
             'company_id' => 'required|exists:companies,id',
         ]);
-
-        $user = Auth::user();
 
         // Verify user belongs to company or is super admin
         if ($user->isSuperAdmin() || $user->companies->contains($request->company_id)) {
@@ -156,6 +192,16 @@ class AuthController extends Controller
         }
 
         return redirect()->back()->with('error', 'Unauthorized access to company.');
+    }
+
+    public function switchAll()
+    {
+        $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            $user->update(['current_company_id' => null]);
+            return redirect()->route('dashboard')->with('success', 'Switched to Global Platform View.');
+        }
+        return redirect()->route('dashboard');
     }
 
     public function redirectToGoogle()
@@ -176,7 +222,11 @@ class AuthController extends Controller
             $user->update(['is_otp_verified' => true]);
             Auth::login($user);
 
-            if ($user->companies->count() > 1) {
+            if ($user->isSuperAdmin()) {
+                $user->update(['current_company_id' => null]);
+                session(['company_modal_dismissed' => true]);
+                session()->forget('show_company_select_modal');
+            } elseif ($user->companies->count() > 1) {
                 session(['show_company_select_modal' => true]);
                 session()->forget('company_modal_dismissed');
             } else {

@@ -3,6 +3,21 @@
 @section('title', 'Dashboard - CRM Pro')
 
 @section('content')
+@if($isSuperAdmin && $company)
+    <div class="alert alert-primary d-flex justify-content-between align-items-center mb-4 py-2 px-3 border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(30,27,75,0.08) 100%); border-left: 4px solid #2563eb !important;">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bx bx-shield-quarter text-primary fs-4"></i>
+            <div>
+                <strong class="text-dark">Super Admin Inspection Mode:</strong>
+                <span class="text-muted ms-1">Viewing isolated workspace for <strong>{{ $company->name }}</strong> (ID #{{ $company->id }})</span>
+            </div>
+        </div>
+        <a href="{{ route('company.switch.all') }}" class="btn btn-sm btn-outline-primary fw-semibold">
+            <i class="bx bx-arrow-back me-1"></i> Return to Global Platform View
+        </a>
+    </div>
+@endif
+
 @if(!$company)
     <div class="card bg-label-primary mb-4 border-0">
         <div class="card-body d-flex justify-content-between align-items-center">

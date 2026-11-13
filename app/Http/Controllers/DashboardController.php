@@ -21,43 +21,49 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Resolve Active Company Workspace
+        // 1. Super Admin View (Global Platform Dashboard)
+        if ($user->isSuperAdmin() && !$user->current_company_id) {
+            $totalCompanies = Company::count();
+            $totalUsers = User::count();
+            $totalSystemInvoices = Invoice::count();
+            $totalRevenue = Invoice::sum('total');
+            $companies = Company::with('owner')->latest()->get();
+
+            return view('dashboard.admin', compact(
+                'totalCompanies', 'totalUsers', 'totalSystemInvoices', 'totalRevenue', 'companies'
+            ));
+        }
+
+        // 2. Company-Scoped Workspace (Regular Admin OR Super Admin inspecting a company)
+        $userCompanies = $user->isSuperAdmin() ? Company::all() : $user->companies;
         $companyId = $user->current_company_id;
         $company = $companyId ? Company::find($companyId) : null;
-        $userCompanies = $user->companies;
 
+        // Auto-resolve first company if not set and user has companies
         if (!$company && $userCompanies->count() > 0) {
             $company = $userCompanies->first();
             $companyId = $company->id;
             $user->update(['current_company_id' => $companyId]);
         }
 
-        if (!$company) {
-            $company = Company::first();
-            if ($company) {
-                $companyId = $company->id;
-                $user->update(['current_company_id' => $companyId]);
-            }
-        }
-
         $currency = $company ? ($company->currency ?: 'PKR') : 'PKR';
 
-        // 2. Tenancy Scoped KPIs (Strictly for Active Company)
-        $totalLeads = Lead::where('company_id', $companyId)->count();
-        $totalCustomers = Customer::where('company_id', $companyId)->count();
-        $totalInvoices = Invoice::where('company_id', $companyId)->count();
-        $totalProducts = Product::where('company_id', $companyId)->count();
-        $totalPurchases = Purchase::where('company_id', $companyId)->count();
+        // Tenancy Scoped KPIs (Strictly for Active Company)
+        $totalLeads = $companyId ? Lead::where('company_id', $companyId)->count() : 0;
+        $totalCustomers = $companyId ? Customer::where('company_id', $companyId)->count() : 0;
+        $totalInvoices = $companyId ? Invoice::where('company_id', $companyId)->count() : 0;
+        $totalProducts = $companyId ? Product::where('company_id', $companyId)->count() : 0;
+        $totalPurchases = $companyId ? Purchase::where('company_id', $companyId)->count() : 0;
 
         // Financial KPIs for active company
-        $totalIncome = Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount');
-        $totalExpenses = Expense::where('company_id', $companyId)->sum('amount');
+        $totalIncome = $companyId ? Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount') : 0;
+        $totalExpenses = $companyId ? Expense::where('company_id', $companyId)->sum('amount') : 0;
         $netProfit = $totalIncome - $totalExpenses;
 
-        $recentInvoices = Invoice::where('company_id', $companyId)->with('customer')->latest()->take(6)->get();
-        $recentLeads = Lead::where('company_id', $companyId)->latest()->take(6)->get();
+        $recentInvoices = $companyId ? Invoice::where('company_id', $companyId)->with('customer')->latest()->take(6)->get() : collect();
+        $recentLeads = $companyId ? Lead::where('company_id', $companyId)->latest()->take(6)->get() : collect();
 
-        // Global Platform Stats (for Super Admin summary card)
+        // Platform Stats for Super Admin banner if inspecting
         $isSuperAdmin = $user->isSuperAdmin();
         $totalCompanies = Company::count();
         $totalUsers = User::count();

@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/verify-otp', [AuthController::class, 'showOtpVerify'])->name('otp.verify');
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/company/switch', [AuthController::class, 'switchCompany'])->name('company.switch');
+    Route::get('/company/switch-all', [AuthController::class, 'switchAll'])->name('company.switch.all');
     Route::post('/company/dismiss-modal', [CompanyController::class, 'dismissModal'])->name('company.dismiss_modal');
 });
 

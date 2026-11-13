@@ -6,7 +6,7 @@
     <title>Enterprise Sign In — Nexus ERP &amp; CRM</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/logo.svg') }}" />
+    <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg" />
 
     <!-- Google Fonts & Boxicons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -217,7 +217,34 @@
         <!-- Top Logo & Badges -->
         <div>
             <div class="d-flex align-items-center gap-3 mb-4">
-                <img src="{{ asset('assets/img/logo.svg') }}" width="48" height="48" alt="Nexus Logo" style="filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.5));" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="none" style="filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.5));">
+                    <defs>
+                        <linearGradient id="premGradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#4338ca" />
+                            <stop offset="50%" stop-color="#3b82f6" />
+                            <stop offset="100%" stop-color="#2563eb" />
+                        </linearGradient>
+                        <linearGradient id="premGradAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#0284c7" />
+                            <stop offset="60%" stop-color="#06b6d4" />
+                            <stop offset="100%" stop-color="#10b981" />
+                        </linearGradient>
+                        <linearGradient id="premGradShade" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#312e81" />
+                            <stop offset="100%" stop-color="#1e1b4b" />
+                        </linearGradient>
+                        <filter id="premGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#3b82f6" flood-opacity="0.35" />
+                        </filter>
+                    </defs>
+                    <path d="M32 4L56 16V40L32 58L8 40V16L32 4Z" fill="url(#premGradPrimary)" filter="url(#premGlow)" />
+                    <path d="M32 8L52 18V38L32 53L12 38V18L32 8Z" fill="#ffffff" fill-opacity="0.12" />
+                    <path d="M14 20L32 30V50L14 37V20Z" fill="url(#premGradShade)" />
+                    <path d="M32 10L50 19L32 29L14 20L32 10Z" fill="url(#premGradAccent)" />
+                    <path d="M32 30L50 20V38L32 50V30Z" fill="url(#premGradPrimary)" />
+                    <path d="M32 17L42 27H36V40H28V27H22L32 17Z" fill="#ffffff" />
+                    <circle cx="32" cy="46" r="2.5" fill="#10b981" />
+                </svg>
                 <div>
                     <h3 class="mb-0 fw-bold text-white lh-1" style="letter-spacing: -0.5px;">
                         NEXUS<span style="color: #60a5fa;">ERP</span>
@@ -289,7 +316,34 @@
         <div class="form-container">
             <!-- Mobile Brand Header -->
             <div class="text-center d-lg-none mb-4">
-                <img src="{{ asset('assets/img/logo.svg') }}" width="42" height="42" alt="Nexus Logo" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="42" height="42" fill="none">
+                    <defs>
+                        <linearGradient id="premGradPrimaryMob" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#4338ca" />
+                            <stop offset="50%" stop-color="#3b82f6" />
+                            <stop offset="100%" stop-color="#2563eb" />
+                        </linearGradient>
+                        <linearGradient id="premGradAccentMob" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#0284c7" />
+                            <stop offset="60%" stop-color="#06b6d4" />
+                            <stop offset="100%" stop-color="#10b981" />
+                        </linearGradient>
+                        <linearGradient id="premGradShadeMob" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#312e81" />
+                            <stop offset="100%" stop-color="#1e1b4b" />
+                        </linearGradient>
+                        <filter id="premGlowMob" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#3b82f6" flood-opacity="0.35" />
+                        </filter>
+                    </defs>
+                    <path d="M32 4L56 16V40L32 58L8 40V16L32 4Z" fill="url(#premGradPrimaryMob)" filter="url(#premGlowMob)" />
+                    <path d="M32 8L52 18V38L32 53L12 38V18L32 8Z" fill="#ffffff" fill-opacity="0.12" />
+                    <path d="M14 20L32 30V50L14 37V20Z" fill="url(#premGradShadeMob)" />
+                    <path d="M32 10L50 19L32 29L14 20L32 10Z" fill="url(#premGradAccentMob)" />
+                    <path d="M32 30L50 20V38L32 50V30Z" fill="url(#premGradPrimaryMob)" />
+                    <path d="M32 17L42 27H36V40H28V27H22L32 17Z" fill="#ffffff" />
+                    <circle cx="32" cy="46" r="2.5" fill="#10b981" />
+                </svg>
                 <h4 class="fw-bold mb-0 mt-2 text-dark">NEXUS<span class="text-primary">ERP</span></h4>
                 <small class="text-muted text-uppercase" style="font-size: 0.72rem; letter-spacing: 1px;">Enterprise Cloud Platform</small>
             </div>
@@ -297,7 +351,10 @@
             <!-- Header -->
             <div class="mb-4">
                 <h3 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.5px;">Welcome Back! 👋</h3>
-                <p class="text-muted small mb-0">Sign in to your CRM, ERP &amp; Accounting workspace</p>
+                <p class="text-muted small mb-0">
+                    Sign in to your CRM, ERP &amp; Accounting workspace or 
+                    <a href="{{ route('register') }}" class="fw-bold text-primary text-decoration-none">Create Account</a>
+                </p>
             </div>
 
             @if(session('success'))
@@ -383,12 +440,25 @@
                     </div>
                 </div>
 
-                <div class="mb-4 pt-1">
-                    <button class="btn btn-submit w-100" type="submit">
+                <div class="mb-3 pt-1">
+                    <button class="btn btn-submit w-100 py-2 fw-semibold fs-6" type="submit">
                         <i class="bx bx-log-in me-1"></i> Sign In to Account
                     </button>
                 </div>
             </form>
+
+            <div class="text-center my-3">
+                <span class="text-muted small">Don't have an account?</span>
+                <a href="{{ route('register') }}" class="fw-bold text-primary ms-1 text-decoration-none" style="font-size: 0.92rem;">
+                    Register / Create New Account →
+                </a>
+            </div>
+
+            <div class="d-grid mb-3">
+                <a href="{{ route('register') }}" class="btn btn-outline-primary py-2 fw-semibold d-flex align-items-center justify-content-center gap-2" style="border-radius: 8px; border-width: 1.5px; font-size: 0.9rem;">
+                    <i class="bx bx-user-plus fs-5"></i> Register New Business Account
+                </a>
+            </div>
 
             <div class="text-center pt-3 border-top">
                 <small class="text-muted d-flex align-items-center justify-content-center gap-1" style="font-size: 0.74rem;">

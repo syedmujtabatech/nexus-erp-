@@ -87,7 +87,9 @@
                     <th>Owner</th>
                     <th>Email</th>
                     <th>Currency</th>
+                    <th>Plan</th>
                     <th>Created At</th>
+                    <th class="text-end">Action</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -100,13 +102,28 @@
                                         {{ strtoupper(substr($comp->name, 0, 1)) }}
                                     </span>
                                 </div>
-                                <strong class="text-dark">{{ $comp->name }}</strong>
+                                <div>
+                                    <strong class="text-dark">{{ $comp->name }}</strong>
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">ID #{{ $comp->id }}</small>
+                                </div>
                             </div>
                         </td>
                         <td>{{ $comp->owner->name ?? 'System Admin' }}</td>
                         <td>{{ $comp->email ?? 'N/A' }}</td>
                         <td><span class="badge bg-label-info">{{ $comp->currency }}</span></td>
+                        <td>
+                            <span class="badge bg-label-primary text-uppercase">{{ $comp->plan ?? 'trial' }}</span>
+                        </td>
                         <td>{{ $comp->created_at->format('M d, Y') }}</td>
+                        <td class="text-end">
+                            <form action="{{ route('company.switch') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="company_id" value="{{ $comp->id }}">
+                                <button type="submit" class="btn btn-sm btn-primary py-1 px-3">
+                                    <i class="bx bx-log-in-circle me-1"></i> Inspect Workspace
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

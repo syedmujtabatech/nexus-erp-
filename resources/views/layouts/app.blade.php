@@ -8,7 +8,7 @@
     <meta name="description" content="Nexus ERP & CRM — Multi-Company Enterprise Cloud CRM & Accounting System" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/logo.svg') }}" />
+    <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -319,7 +319,7 @@
                     <div class="app-brand demo py-3">
                         <a href="{{ route('dashboard') }}" class="app-brand-link gap-2 align-items-center text-decoration-none">
                             <span class="app-brand-logo demo">
-                                <img src="{{ asset('assets/img/logo.svg') }}" width="36" height="36" alt="Nexus Logo" />
+                                <img src="/assets/img/logo.svg" width="36" height="36" alt="Nexus Logo" />
                             </span>
                             <span class="app-brand-text demo menu-text fw-bold fs-4 ms-1" style="color: #0f172a; letter-spacing: -0.5px;">
                                 NEXUS<span style="color: #2563eb;">ERP</span>
@@ -539,16 +539,24 @@
                         <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                             <!-- Workspace Indicator / Switcher -->
                             <div class="navbar-nav align-items-center">
-                                @if($user->companies->count() > 0)
+                                @php
+                                    $availableCompanies = $user->isSuperAdmin() ? \App\Models\Company::all() : $user->companies;
+                                @endphp
+                                @if($availableCompanies->count() > 0 || $user->isSuperAdmin())
                                     <div class="nav-item d-flex align-items-center gap-2">
                                         <form action="{{ route('company.switch') }}" method="POST" class="d-flex align-items-center m-0">
                                             @csrf
                                             <div class="d-flex align-items-center px-3 py-1 rounded-3" style="background: #f1f5f9; border: 1px solid #e2e8f0;">
                                                 <i class="bx bx-buildings text-primary me-2 fs-5"></i>
                                                 <select name="company_id" onchange="this.form.submit()" class="form-select form-select-sm border-0 p-0 fw-bold text-dark shadow-none" style="cursor: pointer; width: auto; background: transparent; font-size: 0.85rem;">
-                                                    @foreach($user->companies as $comp)
-                                                        <option value="{{ $comp->id }}" {{ ($user->current_company_id == $comp->id || (!$user->current_company_id && $loop->first)) ? 'selected' : '' }}>
-                                                            {{ $comp->name }} ({{ $comp->currency }})
+                                                    @if($user->isSuperAdmin())
+                                                        <option value="all" {{ !$user->current_company_id ? 'selected' : '' }}>
+                                                            🌐 Global Platform View (All Companies)
+                                                        </option>
+                                                    @endif
+                                                    @foreach($availableCompanies as $comp)
+                                                        <option value="{{ $comp->id }}" {{ ($user->current_company_id == $comp->id) ? 'selected' : '' }}>
+                                                            🏢 {{ $comp->name }} ({{ $comp->currency }})
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -681,8 +689,8 @@
         </div>
         <!-- / Layout wrapper -->
 
-        <!-- Multi-Company Popup Modal -->
-        @if($user->companies->count() > 1 && session('show_company_select_modal') && !session()->has('company_modal_dismissed'))
+        <!-- Multi-Company Popup Modal (Only for regular users with > 1 companies; Super Admin is excluded) -->
+        @if(!$user->isSuperAdmin() && $user->companies->count() > 1 && session('show_company_select_modal') && !session()->has('company_modal_dismissed'))
             <div class="modal fade show d-block" id="companySelectModal" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);" tabindex="-1" aria-modal="true" role="dialog">
                 <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
                     <div class="modal-content shadow-2xl border-0 rounded-4 overflow-hidden">

@@ -7,7 +7,7 @@
     <div class="card-body p-4 p-sm-5 text-center">
         <!-- Brand Logo Header -->
         <div class="d-inline-flex align-items-center justify-content-center gap-2 mb-3">
-            <img src="{{ asset('assets/img/logo.svg') }}" width="44" height="44" alt="Nexus Logo" />
+            <img src="/assets/img/logo.svg" width="44" height="44" alt="Nexus Logo" />
             <div class="text-start">
                 <span class="fw-bold fs-3 d-block lh-1" style="color: #0f172a; letter-spacing: -0.5px;">
                     NEXUS<span style="color: #2563eb;">ERP</span>
