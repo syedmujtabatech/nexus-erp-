@@ -25,7 +25,61 @@
                 <h5 class="card-title text-primary fw-bold mb-1"><i class="bx bx-buildings me-2"></i>Welcome! Set Up Your First Business Workspace</h5>
                 <p class="card-text text-muted mb-0">Create your company profile to start managing Leads, Quotations, Invoices, Accounts, and Team.</p>
             </div>
-            <a href="{{ route('companies.index') }}" class="btn btn-primary fw-semibold"><i class="bx bx-plus me-1"></i> Create Company Now</a>
+            <button type="button" class="btn btn-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#createFirstCompanyModal">
+                <i class="bx bx-plus me-1"></i> Create Company Now
+            </button>
+        </div>
+    </div>
+
+    <!-- Automatic Setup Popup Modal for Fresh Registered Admin -->
+    <div class="modal fade show d-block" id="createFirstCompanyModal" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(5px);" tabindex="-1" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+            <div class="modal-content shadow-2xl border-0 rounded-4 overflow-hidden">
+                <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e1b4b 0%, #2563eb 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bx bx-buildings fs-4 text-warning"></i>
+                        <div>
+                            <h6 class="modal-title text-white fw-bold mb-0">Create Business Workspace</h6>
+                            <small class="text-white-50" style="font-size: 0.75rem;">Set up your company profile to unlock all CRM modules</small>
+                        </div>
+                    </div>
+                </div>
+                <form action="{{ route('companies.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body p-4 bg-light">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark small text-uppercase">Company Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Nexus Traders Pvt Ltd" required autofocus />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-dark small text-uppercase">Currency</label>
+                                <select name="currency" class="form-select">
+                                    <option value="PKR" selected>PKR (Rs)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="AED">AED (AED)</option>
+                                    <option value="SAR">SAR (SAR)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-dark small text-uppercase">Company Phone</label>
+                                <input type="text" name="phone" class="form-control" value="{{ auth()->user()->phone ?? '' }}" placeholder="+92 300 1234567" />
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold text-dark small text-uppercase">Office Address</label>
+                            <input type="text" name="address" class="form-control" placeholder="Office #, Street, City" />
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white border-top py-2 px-4 d-flex justify-content-between">
+                        <small class="text-muted" style="font-size: 0.72rem;"><i class="bx bx-shield-check text-success me-1"></i> Multi-Tenant Isolated Workspace</small>
+                        <button type="submit" class="btn btn-primary fw-semibold px-4">
+                            <i class="bx bx-check-circle me-1"></i> Create &amp; Launch Workspace
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endif

@@ -133,32 +133,7 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-8 mb-3">
-                    <label for="company_name" class="form-label fw-semibold text-muted small text-uppercase">Company / Business Name <span class="text-primary">(Setup Now or Later)</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bx bx-buildings fs-5"></i></span>
-                        <input
-                            type="text"
-                            class="form-control border-start-0 ps-1"
-                            id="company_name"
-                            name="company_name"
-                            placeholder="e.g. Nexus Traders Pvt Ltd"
-                            value="{{ old('company_name') }}"
-                        />
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label for="currency" class="form-label fw-semibold text-muted small text-uppercase">Currency</label>
-                    <select name="currency" id="currency" class="form-select">
-                        <option value="PKR" selected>PKR (Rs)</option>
-                        <option value="USD">USD ($)</option>
-                        <option value="AED">AED (AED)</option>
-                        <option value="SAR">SAR (SAR)</option>
-                        <option value="EUR">EUR (€)</option>
-                    </select>
-                </div>
-            </div>
+
 
             <div class="mb-4 pt-1">
                 <button class="btn btn-primary d-grid w-100 py-2 fw-semibold fs-6" type="submit" style="border-radius: 8px;">
