@@ -354,15 +354,17 @@ class AccountingController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'opening_balance' => 'required|numeric|min:0',
+            'opening_balance' => 'nullable|numeric|min:0',
         ]);
+
+        $opening = $request->opening_balance ?? 0;
 
         $account = Account::create([
             'company_id' => Auth::user()->current_company_id,
             'name' => $request->name,
             'account_number' => $request->account_number,
-            'opening_balance' => $request->opening_balance,
-            'current_balance' => $request->opening_balance,
+            'opening_balance' => $opening,
+            'current_balance' => $opening,
         ]);
 
         ActivityLogger::log('create_account', "Created account: {$account->name} with balance {$account->opening_balance}");

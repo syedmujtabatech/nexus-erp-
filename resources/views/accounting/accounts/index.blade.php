@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Bank & Cash Accounts - Nexus ERP')
+@section('title', 'Accounts - Nexus ERP')
 
 @section('content')
 @php
@@ -21,7 +21,7 @@
                 <div>
                     <small class="text-muted text-uppercase fw-semibold">Total Liquid Treasury</small>
                     <h3 class="fw-bold text-success mb-0">${{ number_format($totalLiquidity ?? $accounts->sum('current_balance'), 2) }}</h3>
-                    <small class="text-muted">{{ $accounts->count() }} Active Cash/Bank Accounts</small>
+                    <small class="text-muted">{{ $accounts->count() }} Active Accounts</small>
                 </div>
             </div>
         </div>
@@ -43,8 +43,8 @@
 <!-- Table Card -->
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3">
-        <h5 class="card-title m-0 fw-bold"><i class="bx bx-list-ul text-primary me-2"></i>Bank & Cash Accounts Directory</h5>
-        <small class="text-muted">Overview of liquid assets, opening balances, current funds, and transaction ledgers</small>
+        <h5 class="card-title m-0 fw-bold"><i class="bx bx-list-ul text-primary me-2"></i>Accounts Directory</h5>
+        <small class="text-muted">Overview of liquid assets, accounts, current funds, and transaction ledgers</small>
     </div>
 
     <div class="table-responsive text-nowrap">
@@ -167,22 +167,17 @@
                 <form action="{{ route('accounts.store') }}" method="POST">
                     @csrf
                     <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title text-white fw-bold"><i class="bx bx-plus-circle me-2"></i>Add Bank / Cash Account</h5>
+                        <h5 class="modal-title text-white fw-bold"><i class="bx bx-plus-circle me-2"></i>Add Account</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-4 text-start">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Account Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" placeholder="e.g. Meezan Bank / Petty Cash Drawer" required>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Meezan Bank" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Account / IBAN Number</label>
                             <input type="text" name="account_number" class="form-control" placeholder="PK12MEZN0000123456789">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Opening Balance ($) <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" name="opening_balance" class="form-control" placeholder="0.00" required>
-                            <small class="text-muted">Initial liquidity deposited into this account.</small>
                         </div>
                     </div>
                     <div class="modal-footer bg-light py-2">

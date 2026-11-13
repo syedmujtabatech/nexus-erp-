@@ -457,7 +457,7 @@
                                         <li class="menu-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
                                             <a href="{{ route('accounts.index') }}" class="menu-link">
                                                 <i class="menu-icon tf-icons bx bx-wallet"></i>
-                                                <div>Bank & Cash Accounts</div>
+                                                <div>Accounts</div>
                                             </a>
                                         </li>
                                     @endif

@@ -142,7 +142,7 @@
                                                                         'products' => 'Products & Services',
                                                                         'quotations' => 'Quotations & Proposals',
                                                                         'invoices' => 'Invoices & Billing',
-                                                                        'accounts' => 'Bank & Cash Accounts',
+                                                                        'accounts' => 'Accounts',
                                                                         'vendors' => 'Vendors & Suppliers',
                                                                         'expenses' => 'Operating Expenses',
                                                                     ];
@@ -269,7 +269,7 @@
                                         'products' => 'Products & Services',
                                         'quotations' => 'Quotations & Proposals',
                                         'invoices' => 'Invoices & Billing',
-                                        'accounts' => 'Bank & Cash Accounts',
+                                        'accounts' => 'Accounts',
                                         'vendors' => 'Vendors & Suppliers',
                                         'expenses' => 'Operating Expenses',
                                     ];
