@@ -54,6 +54,23 @@ class DashboardController extends Controller
         $totalInvoices = $companyId ? Invoice::where('company_id', $companyId)->count() : 0;
         $totalProducts = $companyId ? Product::where('company_id', $companyId)->count() : 0;
         $totalPurchases = $companyId ? Purchase::where('company_id', $companyId)->count() : 0;
+        $totalQuotations = $companyId ? Quotation::where('company_id', $companyId)->count() : 0;
+
+        // CRM Pipeline & Conversion Metrics
+        $pipelineValue = $companyId ? Lead::where('company_id', $companyId)->sum('value') : 0;
+        $convertedLeads = $companyId ? Lead::where('company_id', $companyId)->where('status', 'converted')->count() : 0;
+        $lostLeads = $companyId ? Lead::where('company_id', $companyId)->where('status', 'lost')->count() : 0;
+        $activeLeads = max(0, $totalLeads - $convertedLeads - $lostLeads);
+        $winRate = $totalLeads > 0 ? round(($convertedLeads / $totalLeads) * 100, 1) : 0;
+
+        // Lead Stages Funnel Distribution
+        $stageNew = $companyId ? Lead::where('company_id', $companyId)->where('status', 'new')->count() : 0;
+        $stageContacted = $companyId ? Lead::where('company_id', $companyId)->where('status', 'contacted')->count() : 0;
+        $stageQualified = $companyId ? Lead::where('company_id', $companyId)->where('status', 'qualified')->count() : 0;
+        $stageProposal = $companyId ? Lead::where('company_id', $companyId)->where('status', 'proposal_sent')->count() : 0;
+        $stageWon = $convertedLeads;
+        $stageLost = $lostLeads;
+        $funnelData = [$stageNew, $stageContacted, $stageQualified, $stageProposal, $stageWon, $stageLost];
 
         // Financial KPIs (GAAP Sequence: Revenue -> COGS -> Gross Profit -> OPEX -> Operating Profit -> Net Profit)
         $totalRevenue = $companyId ? Transaction::where('company_id', $companyId)->where('type', 'income')->sum('amount') : 0;
@@ -70,6 +87,63 @@ class DashboardController extends Controller
         $totalIncome = $totalRevenue;
         $totalExpenses = $operatingExpenses;
 
+        // Average Deal / Invoice Value
+        $avgDealValue = $totalInvoices > 0 ? round($totalRevenue / $totalInvoices, 2) : 0;
+
+        // 6-Month Rolling Financial Trend (For ApexCharts Area/Spline)
+        $monthLabels = [];
+        $monthlyRevenueSeries = [];
+        $monthlyExpenseSeries = [];
+        $monthlyProfitSeries = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $monthLabels[] = $date->format('M');
+            $year = $date->year;
+            $month = $date->month;
+
+            $mRev = $companyId ? (
+                Transaction::where('company_id', $companyId)
+                    ->where('type', 'income')
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->sum('amount')
+            ) : 0;
+
+            if ($mRev == 0 && $companyId) {
+                $mRev = Invoice::where('company_id', $companyId)
+                    ->where('status', 'paid')
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->sum('total');
+            }
+
+            $mExp = $companyId ? (
+                Expense::where('company_id', $companyId)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->sum('amount')
+            ) : 0;
+
+            // If current month and recorded data has no date or falls under overall totals
+            if ($i === 0 && $mRev == 0 && $totalRevenue > 0) {
+                $mRev = $totalRevenue;
+            }
+            if ($i === 0 && $mExp == 0 && $operatingExpenses > 0) {
+                $mExp = $operatingExpenses;
+            }
+
+            $mProfit = $mRev - $mExp;
+
+            $monthlyRevenueSeries[] = (float) $mRev;
+            $monthlyExpenseSeries[] = (float) $mExp;
+            $monthlyProfitSeries[] = (float) $mProfit;
+        }
+
+        // Target Quota Progress (Default target e.g. 500,000 or 2x current revenue)
+        $monthlyTarget = max(500000, $totalRevenue * 1.5);
+        $quotaPercentage = $monthlyTarget > 0 ? min(100, round(($totalRevenue / $monthlyTarget) * 100)) : 0;
+
         $recentInvoices = $companyId ? Invoice::where('company_id', $companyId)->with('customer')->latest()->take(6)->get() : collect();
         $recentLeads = $companyId ? Lead::where('company_id', $companyId)->latest()->take(6)->get() : collect();
 
@@ -80,9 +154,13 @@ class DashboardController extends Controller
 
         return view('dashboard.company', compact(
             'company', 'userCompanies', 'currency', 'totalLeads', 'totalCustomers', 
-            'totalInvoices', 'totalProducts', 'totalPurchases', 'totalIncome', 'totalExpenses', 
+            'totalInvoices', 'totalProducts', 'totalPurchases', 'totalQuotations', 'totalIncome', 'totalExpenses', 
             'totalRevenue', 'cogs', 'grossProfit', 'operatingExpenses', 'operatingProfit',
-            'netProfit', 'recentInvoices', 'recentLeads', 'isSuperAdmin', 'totalCompanies', 'totalUsers'
+            'netProfit', 'recentInvoices', 'recentLeads', 'isSuperAdmin', 'totalCompanies', 'totalUsers',
+            'pipelineValue', 'convertedLeads', 'lostLeads', 'activeLeads', 'winRate', 'avgDealValue',
+            'stageNew', 'stageContacted', 'stageQualified', 'stageProposal', 'stageWon', 'stageLost', 'funnelData',
+            'monthLabels', 'monthlyRevenueSeries', 'monthlyExpenseSeries', 'monthlyProfitSeries',
+            'monthlyTarget', 'quotaPercentage'
         ));
     }
 }
