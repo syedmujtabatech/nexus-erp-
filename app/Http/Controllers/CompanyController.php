@@ -118,23 +118,24 @@ class CompanyController extends Controller
     public function destroy($id)
     {
         $company = Company::findOrFail($id);
+        $user = Auth::user();
 
-        if (!Auth::user()->isSuperAdmin() && $company->user_id != Auth::id()) {
+        if (!$user->isSuperAdmin() && $company->user_id != $user->id && !$user->companies->contains($id)) {
             return redirect()->back()->with('error', 'Unauthorized to delete this company.');
         }
 
-        $user = Auth::user();
-        if ($user->companies()->count() <= 1 && !$user->isSuperAdmin()) {
-            return redirect()->back()->with('error', 'You must maintain at least one company workspace.');
-        }
-
         $name = $company->name;
-        $company->delete();
 
+        // Detach pivot memberships
+        $company->users()->detach();
+
+        // If the active company was deleted, switch to another or null
         if ($user->current_company_id == $id) {
-            $another = $user->companies()->first();
+            $another = $user->companies()->where('companies.id', '!=', $id)->first();
             $user->update(['current_company_id' => $another ? $another->id : null]);
         }
+
+        $company->delete();
 
         ActivityLogger::log('delete_company', "Deleted company: {$name}");
 

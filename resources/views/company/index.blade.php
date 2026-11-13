@@ -94,15 +94,14 @@
                                     <i class="bx bx-edit-alt"></i>
                                 </button>
 
-                                @if($companies->count() > 1)
-                                    <form action="{{ route('companies.destroy', $comp->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ $comp->name }} and all associated data?');" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-icon btn-sm btn-outline-danger" title="Delete Company">
-                                            <i class="bx bx-trash"></i>
-                                        </button>
-                                    </form>
-                                @endif
+                                <!-- Delete Company -->
+                                <form action="{{ route('companies.destroy', $comp->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ $comp->name }} and all associated data?');" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-icon btn-sm btn-outline-danger" title="Delete Company">
+                                        <i class="bx bx-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
