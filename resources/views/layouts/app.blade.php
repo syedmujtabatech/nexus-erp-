@@ -368,7 +368,7 @@
                         @endif
 
                         <!-- Company Tenant Menu (Scoped & Permission Checked) -->
-                        @if($user->companies->count() > 0)
+                        @if(true)
                                 @if($can('leads_view') || $can('customers_view'))
                                     <li class="menu-header small text-uppercase">
                                         <span class="menu-header-text">CRM (Sales & Clients)</span>
@@ -510,17 +510,7 @@
                                         </a>
                                     </li>
                                 @endif
-                            @else
-                                <li class="menu-header small text-uppercase">
-                                    <span class="menu-header-text">Workspace Setup</span>
-                                </li>
-                                <li class="menu-item active">
-                                    <a href="{{ route('companies.index') }}" class="menu-link">
-                                        <i class="menu-icon tf-icons bx bx-building-plus text-primary"></i>
-                                        <div>Create First Company</div>
-                                    </a>
-                                </li>
-                            @endif
+                        @endif
                     </ul>
                 </aside>
                 <!-- / Menu -->

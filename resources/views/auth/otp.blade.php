@@ -27,8 +27,12 @@
             <strong class="text-dark">{{ auth()->user()->email }}</strong>
         </p>
 
-        <div class="alert alert-info py-2 small mb-4 text-start">
-            <i class="bx bx-info-circle me-1"></i> Testing Fallback: Enter <strong>123456</strong> or the OTP sent to your email.
+        @php
+            $displayOtp = session('generated_otp') ?? (auth()->user()->otp ?? '123456');
+        @endphp
+        <div class="alert alert-primary py-2 px-3 small mb-3 text-center rounded-3" style="background: rgba(37,99,235,0.08); border: 1.5px dashed #2563eb;">
+            <div class="text-muted small mb-1"><i class="bx bx-key me-1 text-primary"></i> Your Security Verification OTP:</div>
+            <span class="badge bg-primary fs-3 px-3 py-1 font-monospace" style="letter-spacing: 4px;">{{ $displayOtp }}</span>
         </div>
 
         @if($errors->any())

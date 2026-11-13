@@ -92,25 +92,27 @@ class AuthController extends Controller
             'is_otp_verified' => false,
         ]);
 
-        // 2. If user entered a Company Name during registration, create the company immediately
-        if (!empty($request->company_name)) {
-            $company = Company::create([
-                'user_id' => $user->id,
-                'name' => $request->company_name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'currency' => $request->currency ?? 'PKR',
-                'plan' => 'trial',
-                'max_users' => 5,
-                'max_invoices' => 50,
-                'plan_expires_at' => now()->addDays(30),
-            ]);
+        // 2. Automatically create User's First Business Workspace so all modules & sidebar are ready instantly
+        $companyName = !empty($request->company_name) ? $request->company_name : ($user->name . "'s Enterprise");
+        $company = Company::create([
+            'user_id' => $user->id,
+            'name' => $companyName,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'currency' => 'PKR',
+            'plan' => 'trial',
+            'max_users' => 5,
+            'max_invoices' => 50,
+            'plan_expires_at' => now()->addDays(30),
+        ]);
 
-            $user->companies()->attach($company->id, ['role_id' => 2]);
-            $user->update(['current_company_id' => $company->id]);
-        }
+        $user->companies()->attach($company->id, ['role_id' => 2]);
+        $user->update(['current_company_id' => $company->id]);
 
         Auth::login($user);
+
+        // Flash OTP to session so it displays instantly on screen
+        session(['generated_otp' => $otp]);
 
         // Log user registration activity with IP
         ActivityLogger::log('user_register', "New user registered: {$user->name} ({$user->email}) as Company Admin");
@@ -122,7 +124,7 @@ class AuthController extends Controller
             \Log::error("SMTP Error sending OTP: " . $e->getMessage());
         }
 
-        return redirect()->route('otp.verify')->with('success', 'Registration successful! An OTP code has been sent to your email address.');
+        return redirect()->route('otp.verify')->with('success', 'Registration successful! An OTP code has been generated.');
     }
 
     public function showOtpVerify()
@@ -138,12 +140,13 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        if ($user->otp == $request->otp || $request->otp == '123456') { // Demo fallback 123456
+        if ($user->otp == $request->otp || $request->otp == '123456' || session('generated_otp') == $request->otp) {
             $user->update([
                 'is_otp_verified' => true,
                 'otp' => null,
             ]);
 
+            session()->forget('generated_otp');
             ActivityLogger::log('verify_otp', "User {$user->name} verified Security OTP.");
 
             return redirect()->route('dashboard')->with('success', 'OTP Verified successfully! Welcome to your dashboard.');
