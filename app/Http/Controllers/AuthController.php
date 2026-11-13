@@ -124,7 +124,7 @@ class AuthController extends Controller
             \Log::error("SMTP Error sending OTP: " . $e->getMessage());
         }
 
-        return redirect()->route('otp.verify')->with('success', 'Registration successful! An OTP code has been generated.');
+        return redirect()->route('dashboard')->with('success', 'Registration successful! Please verify the 6-digit OTP code to unlock your dashboard.');
     }
 
     public function showOtpVerify()

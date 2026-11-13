@@ -13,8 +13,9 @@ class EnsureOtpVerified
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if (!$user->is_otp_verified && !$request->routeIs('otp.verify') && !$request->routeIs('logout')) {
-                return redirect()->route('otp.verify');
+            // Allow unverified users to reach the dashboard where the OTP popup modal is displayed
+            if (!$user->is_otp_verified && !$request->routeIs('dashboard') && !$request->routeIs('otp.verify') && !$request->routeIs('logout')) {
+                return redirect()->route('dashboard');
             }
         }
 

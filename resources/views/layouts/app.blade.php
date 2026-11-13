@@ -298,17 +298,16 @@
 </div>
 
 @auth
-    @if(auth()->user()->is_otp_verified)
-        @php
-            $user = auth()->user();
-            $isSuperAdmin = $user->isSuperAdmin();
-            $isCompanyOwner = $user->isCompanyOwner();
-            $currentCompany = \App\Models\Company::find($user->current_company_id) ?? $user->currentCompany ?? $user->companies->first();
+    @php
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        $isCompanyOwner = $user->isCompanyOwner();
+        $currentCompany = \App\Models\Company::find($user->current_company_id) ?? $user->currentCompany ?? $user->companies->first();
 
-            $can = function($permissionKey) use ($user) {
-                return $user->hasPermission($permissionKey);
-            };
-        @endphp
+        $can = function($permissionKey) use ($user) {
+            return $user->hasPermission($permissionKey);
+        };
+    @endphp
 
         <!-- Layout wrapper -->
         <div class="layout-wrapper layout-content-navbar">
@@ -750,12 +749,82 @@
             </script>
         @endif
 
-    @else
-        <!-- OTP Screen Layout: Pure centered box, sidebar and navbar completely hidden -->
-        <div class="d-flex align-items-center justify-content-center min-vh-100 py-5 px-3" style="background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%), #f8fafc;">
-            @yield('content')
-        </div>
-    @endif
+        <!-- Security OTP Verification Popup Modal for Unverified Registered Users -->
+        @if(!$user->is_otp_verified)
+            <div class="modal fade show d-block" id="otpVerificationModal" data-bs-backdrop="static" data-bs-keyboard="false" style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px); z-index: 1090;" tabindex="-1" aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+                    <div class="modal-content shadow-2xl border-0 rounded-4 overflow-hidden">
+                        <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e1b4b 0%, #2563eb 100%);">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bx bx-shield-quarter fs-3 text-warning"></i>
+                                <div>
+                                    <h6 class="modal-title text-white fw-bold mb-0">Two-Step Verification</h6>
+                                    <small class="text-white-50" style="font-size: 0.72rem;">Enter your 6-digit security code</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-body p-4 text-center bg-white">
+                            <div class="avatar avatar-lg bg-label-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                                <i class="bx bx-key text-primary fs-2"></i>
+                            </div>
+
+                            <h5 class="fw-bold mb-1 text-dark">Enter Security OTP</h5>
+                            <p class="text-muted small mb-3">
+                                We sent a verification code to<br/>
+                                <strong class="text-dark">{{ $user->email }}</strong>
+                            </p>
+
+                            @php
+                                $displayOtp = session('generated_otp') ?? ($user->otp ?? '123456');
+                            @endphp
+                            <div class="alert alert-primary py-2 px-3 small mb-3 text-center rounded-3" style="background: rgba(37,99,235,0.08); border: 1.5px dashed #2563eb;">
+                                <div class="text-muted small mb-1"><i class="bx bx-lock-alt me-1 text-primary"></i> Your Security Verification OTP:</div>
+                                <span class="badge bg-primary fs-3 px-3 py-1 font-monospace" style="letter-spacing: 4px;">{{ $displayOtp }}</span>
+                            </div>
+
+                            @if($errors->any())
+                                <div class="alert alert-danger py-2 small mb-3 text-start">
+                                    <ul class="mb-0 ps-3">
+                                        @foreach($errors->all() as $err)
+                                            <li>{{ $err }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <form id="modalOtpForm" action="{{ route('otp.verify') }}" method="POST">
+                                @csrf
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-muted small text-uppercase">Enter 6-Digit Code</label>
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg text-center fw-bold fs-2 text-primary shadow-none"
+                                        id="modal_otp"
+                                        name="otp"
+                                        maxlength="6"
+                                        value="{{ $displayOtp }}"
+                                        placeholder="······"
+                                        required
+                                        autofocus
+                                        style="letter-spacing: 8px; font-family: monospace; border: 2px solid #e2e8f0; border-radius: 10px;"
+                                    />
+                                </div>
+                                <button class="btn btn-primary d-grid w-100 py-2 fw-semibold fs-6 mb-2" type="submit" style="border-radius: 8px;">
+                                    <i class="bx bx-check-shield me-1"></i> Verify OTP &amp; Unlock Dashboard
+                                </button>
+                            </form>
+
+                            <form action="{{ route('logout') }}" method="POST" class="mt-2">
+                                @csrf
+                                <button type="submit" class="btn btn-link text-muted small text-decoration-none py-0">
+                                    <i class="bx bx-log-out me-1"></i> Sign out &amp; return to login
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 @else
     <!-- Guest Layout (Login / Register) - Full Width Centered Container -->
     <div class="d-flex align-items-center justify-content-center min-vh-100 py-5 px-3" style="background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%), #f8fafc;">
