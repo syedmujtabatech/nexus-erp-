@@ -81,33 +81,17 @@ class AuthController extends Controller
 
         $otp = rand(100000, 999999);
 
-        // 1. Create User with Role 2 (Company Admin / Owner)
+        // 1. Create User with Role 2 (Company Owner)
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role_id' => 2, // Role 2: Company Admin
+            'role_id' => 2, // Role 2: Company Owner
             'otp' => $otp,
             'is_otp_verified' => false,
+            'current_company_id' => null, // No company automatically created on registration
         ]);
-
-        // 2. Automatically create User's First Business Workspace so all modules & sidebar are ready instantly
-        $companyName = !empty($request->company_name) ? $request->company_name : ($user->name . "'s Enterprise");
-        $company = Company::create([
-            'user_id' => $user->id,
-            'name' => $companyName,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'currency' => 'PKR',
-            'plan' => 'trial',
-            'max_users' => 5,
-            'max_invoices' => 50,
-            'plan_expires_at' => now()->addDays(30),
-        ]);
-
-        $user->companies()->attach($company->id, ['role_id' => 2]);
-        $user->update(['current_company_id' => $company->id]);
 
         Auth::login($user);
 
@@ -115,7 +99,7 @@ class AuthController extends Controller
         session(['generated_otp' => $otp]);
 
         // Log user registration activity with IP
-        ActivityLogger::log('user_register', "New user registered: {$user->name} ({$user->email}) as Company Admin");
+        ActivityLogger::log('user_register', "New user registered: {$user->name} ({$user->email}) - Account created successfully.", null, $user->id);
 
         // Send OTP via SMTP
         try {

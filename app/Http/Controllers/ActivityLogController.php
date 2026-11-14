@@ -11,9 +11,16 @@ class ActivityLogController extends Controller
     {
         $query = ActivityLog::with(['user', 'company'])->latest();
 
-        // Scope to current company if not super admin
+        // Scope: Super Admin sees all; regular users see their own user actions and active company logs
         if (!auth()->user()->isSuperAdmin()) {
-            $query->where('company_id', auth()->user()->current_company_id);
+            $companyId = auth()->user()->current_company_id;
+            $userId = auth()->id();
+            $query->where(function($q) use ($companyId, $userId) {
+                $q->where('user_id', $userId);
+                if ($companyId) {
+                    $q->orWhere('company_id', $companyId);
+                }
+            });
         }
 
         $logs = $query->paginate(50);

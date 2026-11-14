@@ -6,10 +6,10 @@ use App\Models\ActivityLog;
 
 class ActivityLogger
 {
-    public static function log(string $action, string $description, ?int $companyId = null): void
+    public static function log(string $action, string $description, ?int $companyId = null, ?int $userId = null): void
     {
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => $userId ?? auth()->id(),
             'company_id' => $companyId ?? (auth()->check() ? auth()->user()->current_company_id : null),
             'action' => $action,
             'description' => $description,
