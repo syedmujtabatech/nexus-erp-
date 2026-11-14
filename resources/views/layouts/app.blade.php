@@ -307,6 +307,8 @@
         $can = function($permissionKey) use ($user) {
             return $user->hasPermission($permissionKey);
         };
+
+        $userRoleTitle = $isSuperAdmin ? 'Super Admin' : ($isCompanyOwner ? 'Company Owner' : ($user->role->name ?? 'Company Owner'));
     @endphp
 
         <!-- Layout wrapper -->
@@ -589,7 +591,7 @@
                                         </div>
                                         <div class="d-none d-sm-block text-start">
                                             <span class="fw-semibold d-block lh-1">{{ $user->name }}</span>
-                                            <small class="text-primary fw-semibold" style="font-size: 0.72rem;"><i class="bx bxs-badge-check me-1"></i>{{ $user->role->name ?? 'Super Admin' }}</small>
+                                            <small class="{{ $isSuperAdmin ? 'text-danger' : 'text-primary' }} fw-semibold" style="font-size: 0.72rem;"><i class="bx {{ $isSuperAdmin ? 'bxs-shield' : 'bxs-badge-check' }} me-1"></i>{{ $userRoleTitle }}</small>
                                         </div>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end shadow">
@@ -609,7 +611,7 @@
                                                     </div>
                                                     <div class="flex-grow-1">
                                                         <span class="fw-semibold d-block">{{ $user->name }}</span>
-                                                        <small class="text-muted">{{ $user->email }} &bull; <strong class="text-primary">{{ $user->role->name ?? 'Super Admin' }}</strong></small>
+                                                        <small class="text-muted">{{ $user->email }} &bull; <strong class="{{ $isSuperAdmin ? 'text-danger' : 'text-primary' }}">{{ $userRoleTitle }}</strong></small>
                                                     </div>
                                                 </div>
                                             </a>
