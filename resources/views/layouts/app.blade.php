@@ -749,8 +749,8 @@
             </script>
         @endif
 
-        <!-- Security OTP Verification Popup Modal for Unverified Registered Users -->
-        @if(!$user->is_otp_verified)
+        <!-- Security OTP Verification Popup Modal for Unverified Registered Users Only (Super Admin Bypasses) -->
+        @if(!$isSuperAdmin && !$user->is_otp_verified)
             <div class="modal fade show d-block" id="otpVerificationModal" data-bs-backdrop="static" data-bs-keyboard="false" style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px); z-index: 1090;" tabindex="-1" aria-modal="true" role="dialog">
                 <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
                     <div class="modal-content shadow-2xl border-0 rounded-4 overflow-hidden">
